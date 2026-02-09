@@ -1,0 +1,50 @@
+cot: false
+input_path: delta_belief_rl/env/twenty_questions/config/gemini/
+output_path: delta_belief_rl/env/twenty_questions/direct/gemini/
+system_prompt:
+  original: true
+data:
+  train:
+    input_name: train_rl_secrets.txt
+    output_name: train_rl.parquet
+    N: -1
+  train-sft:
+    input_name: train_sft_secrets.txt
+    output_name: train_sft.parquet
+    N: -1
+  val:
+    input_name: val_secrets.txt
+    output_name: val.parquet
+    N: -1
+  test:
+    input_name: test_secrets.txt
+    output_name: test.parquet
+    N: -1
+  unsolved:
+    input_name: unsolved_secrets.txt
+    output_name: unsolved.parquet
+    N: -1
+  train_rl_curriculum_100-66ps:
+    input_name: train_rl_curriculum_100-66ps.txt
+    output_name: train_rl_curriculum_100-66ps.parquet
+    N: -1
+  train_rl_curriculum_100-50ps:
+    input_name: train_rl_curriculum_100-50ps.txt
+    output_name: train_rl_curriculum_100-50ps.parquet
+    N: -1
+  train_rl_curriculum_100-33ps:
+    input_name: train_rl_curriculum_100-33ps.txt
+    output_name: train_rl_curriculum_100-33ps.parquet
+    N: -1
+  train_rl_curriculum_100-10ps:
+    input_name: train_rl_curriculum_100-10ps.txt
+    output_name: train_rl_curriculum_100-10ps.parquet
+    N: -1
+  train_rl_curriculum_100-5ps:
+    input_name: train_rl_curriculum_100-5ps.txt
+    output_name: train_rl_curriculum_100-5ps.parquet
+    N: -1
+  train_rl_curriculum_100-0ps:
+    input_name: train_rl_curriculum_100-0ps.txt
+    output_name: train_rl_curriculum_100-0ps.parquet
+    N: -1

@@ -1,0 +1,12 @@
+cot: false
+thinking: true
+to_jsonl: true
+input_path: delta_belief_rl/env/twenty_questions/config/coca_plus_thinking/
+output_path: delta_belief_rl/env/twenty_questions/direct/coca_plus_thinking/
+system_prompt:
+    original: true
+data:
+    test:
+        input_name: unique_gemini_test.txt
+        output_name: test.parquet
+        N: -1

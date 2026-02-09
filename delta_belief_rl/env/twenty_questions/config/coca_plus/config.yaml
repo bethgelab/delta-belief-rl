@@ -1,0 +1,19 @@
+cot: false
+input_path: delta_belief_rl/env/twenty_questions/config/coca_plus/
+output_path: delta_belief_rl/env/twenty_questions/direct/coca_plus/
+system_prompt:
+  original: true
+data:
+  train:
+    input_name: rl_training_coca_wo_gemini_test.txt
+    output_name: train_rl.parquet
+    N: -1
+  val:
+    input_name: unique_gemini_val.txt
+    output_name: val.parquet
+    N: -1
+  test:
+    input_name: unique_gemini_test.txt
+    output_name: test.parquet
+    N: -1
+

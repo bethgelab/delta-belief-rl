@@ -1,0 +1,185 @@
+Surat, India
+Oklahoma City, USA
+Portland, USA
+Louisville, USA
+Bhopal, India
+Ludhiana, India
+Vancouver, Canada
+Nashik, India
+Ottawa, Canada
+Faridabad, India
+Ghaziabad, India
+Kitchener, Canada
+Saskatoon, Canada
+Thiruvananthapuram, India
+Monterrey, Mexico
+Mangalore, India
+Ciudad Juárez, Mexico
+Dhanbad, India
+Chihuahua, Mexico
+Raipur, India
+Dehradun, India
+Guntur, India
+Warangal, India
+Udaipur, India
+Ajmer, India
+Morelia, Mexico
+Salem, India
+San Ignacio, Belize
+Ujjain, India
+Panaji, India
+Rawalpindi, Pakistan
+Masaya, Nicaragua
+Gujrat, Pakistan
+David, Panama
+Khulna, Bangladesh
+Rajshahi, Bangladesh
+Mymensingh, Bangladesh
+Comilla, Bangladesh
+Gazipur, Bangladesh
+Santiago de Cuba, Cuba
+Kathmandu, Nepal
+Pokhara, Nepal
+Kingston, Jamaica
+Montego Bay, Jamaica
+Kandy, Sri Lanka
+Jaffna, Sri Lanka
+Santa Fe, Argentina
+Bahía Blanca, Argentina
+Trincomalee, Sri Lanka
+Brasília, Brazil
+Herat, Afghanistan
+Curitiba, Brazil
+Baghlan, Afghanistan
+Teresina, Brazil
+Male, Maldives
+Antofagasta, Chile
+Temuco, Chile
+Samarinda, Indonesia
+Padang, Indonesia
+Ibagué, Colombia
+Cúcuta, Colombia
+Manizales, Colombia
+Cimahi, Indonesia
+Depok, Indonesia
+Trujillo, Peru
+Udon Thani, Thailand
+Hat Yai, Thailand
+Pattaya, Thailand
+Juliaca, Peru
+Tacna, Peru
+Santa Cruz de la Sierra, Bolivia
+Cochabamba, Bolivia
+El Alto, Bolivia
+Kuching, Malaysia
+Machala, Ecuador
+Manila, Philippines
+Quezon City, Philippines
+Loja, Ecuador
+Mandaluyong, Philippines
+Pasig, Philippines
+Taguig, Philippines
+Luque, Paraguay
+San Lorenzo, Paraguay
+Iloilo City, Philippines
+Cagayan de Oro, Philippines
+Zamboanga City, Philippines
+Baguio, Philippines
+Angeles City, Philippines
+Maracay, Venezuela
+Da Nang, Vietnam
+Can Tho, Vietnam
+Cumaná, Venezuela
+Bien Hoa, Vietnam
+Georgetown, Guyana
+Thanh Hoa, Vietnam
+Nam Dinh, Vietnam
+Linden, Guyana
+Buon Ma Thuot, Vietnam
+New Amsterdam, Guyana
+Long Xuyen, Vietnam
+Poipet, Cambodia
+Kampong Thom, Cambodia
+Pakse, Laos
+Pathein, Myanmar
+Monywa, Myanmar
+Astana (Nur-Sultan), Kazakhstan
+Oskemen (Ust-Kamenogorsk), Kazakhstan
+Semey (Semipalatinsk), Kazakhstan
+Oral (Uralsk), Kazakhstan
+Kostanay, Kazakhstan
+Petropavl, Kazakhstan
+Kokshetau, Kazakhstan
+Turkistan, Kazakhstan
+Atyrau, Kazakhstan
+Aktau, Kazakhstan
+Temirtau, Kazakhstan
+Samarkand, Uzbekistan
+Andijan, Uzbekistan
+Fergana, Uzbekistan
+Nukus, Uzbekistan
+Khiva, Uzbekistan
+Guliston, Uzbekistan
+Chirchiq, Uzbekistan
+Shakhrisabz, Uzbekistan
+Seydi, Turkmenistan
+Kerki, Turkmenistan
+Jalal-Abad, Kyrgyzstan
+Tokmok, Kyrgyzstan
+Uzgen, Kyrgyzstan
+Tash-Kumyr, Kyrgyzstan
+Kara-Suu, Kyrgyzstan
+Istaravshan, Tajikistan
+Vahdat, Tajikistan
+Sarband, Tajikistan
+Yovon, Tajikistan
+Farkhor, Tajikistan
+Hangzhou, China
+Wenzhou, China
+Jiaxing, China
+Yancheng, China
+Lianyungang, China
+Zhuzhou, China
+Yueyang, China
+Linyi, China
+Rizhao, China
+Heze, China
+Hohhot, China
+Qingyuan, China
+Liuzhou, China
+Wuzhou, China
+Zunyi, China
+Nanchang, China
+Xinyu, China
+Zhangjiakou, China
+Glasgow, UK
+Toulouse, France
+Nice, France
+Hamburg, Germany
+Frankfurt, Germany
+Barcelona, Spain
+Naples, Italy
+Palermo, Italy
+Rotterdam, Netherlands
+Eindhoven, Netherlands
+Antwerp, Belgium
+Geneva, Switzerland
+Basel, Switzerland
+Vienna, Austria
+Innsbruck, Austria
+Stockholm, Sweden
+Malmö, Sweden
+Odense, Denmark
+Esbjerg, Denmark
+Helsinki, Finland
+Espoo, Finland
+Warsaw, Poland
+Krakow, Poland
+Ostrava, Czech Republic
+Plzeň, Czech Republic
+Kyiv, Ukraine
+Cork, Ireland
+Limerick, Ireland
+Waterford, Ireland
+San Antonio, USA
+El Paso, USA

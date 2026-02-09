@@ -1,0 +1,16 @@
+cot: false
+input_path: delta_belief_rl/env/twenty_questions/config/objects/
+output_path: delta_belief_rl/env/twenty_questions/direct/objects
+system_prompt:
+  original: true
+data:
+  train:
+    input_name: train.txt
+    output_name: train_orig_sp.parquet
+    N: -1
+  test:
+    input_name: test.txt
+    output_name: test_orig_sp.parquet
+    N: -1
+
+

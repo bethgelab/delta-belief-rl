@@ -1,0 +1,16 @@
+cot: false
+input_path: delta_belief_rl/env/twenty_questions/config/coca/
+output_path: delta_belief_rl/env/twenty_questions/direct/coca/
+system_prompt:
+  original: true
+data:
+  train:
+    input_name: rl_training.txt
+    output_name: rl_training.parquet
+    N: -1
+  test:
+    input_name: test.txt
+    output_name: test.parquet
+    N: -1
+
+

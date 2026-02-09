@@ -1,0 +1,393 @@
+seed: 42
+
+multi_turn:
+  env: twenty_questions # guess_my_city | customer_service | murder_mystery
+  enable: True
+  max_turns:
+    train: 20
+    val: 20
+  train:
+    n: 1 # for n>1 grpo rollouts and rloo 
+  val:
+    n: 1 #for std computation
+  logprob_reward:
+    enabled: False # enable logprob reward
+    agg: sum 
+    base_model: actor # default actor if lora enabled can set to ref
+    step_model: actor # always set to actor
+    normalised: False # whether to normalise the logprob reward by the number of questions asked
+    methods:
+      - episode_centering # or / batch_centering / group_centering 
+      - min_max # or  - tanh
+        # -  batch_std or group_std 
+        # -  tanh
+    clip_min: -2
+    clip_max: 2
+    tau: 1.0 #temperature for tanh squashing
+
+  logprob_sampling:
+    # The sample with highest logprob_dif is chosen as next action (i.e., next question)
+    # Also requires `actor_rollout_ref.rollout.n > 1` and `actor_rollout_ref.rollout.do_sample = True`
+    enabled: False
+    # The number of rollouts that will be sampled as the best found actions (given the logprob_diff)
+    # and the worst found actions.
+    # You must comply with `best_n` + `worst_n` <= `actor_rollout_ref.rollout.n`.
+    # If `best_n` + `worst_n` < `actor_rollout_ref.rollout.n`, the remaining rollouts will be chosen randomly.
+    best_n: 2
+    worst_n: 2
+    p_best: 1.0 #select best action when no groups are specified
+  debug: False
+  verify_judge:
+    enabled: True # whether to verify judge's response
+    methods:
+      - exact
+      - syntax
+      - sentence
+      - question
+      - multiple_questions
+      - length
+    false_positive_behavior: "yes" #keep in quotes to avoid yaml parsing as boolean
+    short_circuit: False
+  reward:
+    attribution_level: None # trajectory | token
+    weight_elicit: 1.0 #1.0 # lambda for the elicitation reward 
+    signals:
+      win: 2.0 #1.0
+      invalid_action: -5.0 #-10.0
+      repeated_action: -1.0 #-0.5
+      traj_len: -0.05 #-0.01
+      action_len: -0.0
+      all_valid: 0.0 #default 0.0 to not pass any bonus
+  belief: # to estimate beliefs on pre-generated trajectories
+    enabled: False
+    method: # specify methods from logprob, confidence, accuracy
+      - logprob
+      - confidence
+    agg: sum
+    data_dir: null # directory to save the belief data
+  
+  
+data:
+  enable_thinking: False # added for multi-turn
+  tokenizer: null
+  train_files: delta_belief_rl/env/twenty_questions/direct/coca/rl_training.parquet
+  val_files: delta_belief_rl/env/twenty_questions/direct/coca/test.parquet
+  prompt_key: prompt
+  system_key: system_prompt # for guess my city set to null as there is no seperate system and agent prompt, for twenty questions set to system_prompt
+  reward_fn_key: data_source
+  max_prompt_length: 2500 #has to be large enough for multi-turn to fit the whole conversation
+  max_response_length: 50 #keep short for multi-turn so tokens dont lead to OOM 
+  max_start_length: 250 # added for multi-turn
+  train_batch_size: 32 # 32 for multi-turn
+  val_batch_size: null
+  return_raw_input_ids: False  # This should be set to true when the tokenizer between policy and rm differs
+  return_raw_chat: False
+  shuffle: True
+  filter_overlong_prompts: False # for large-scale dataset, filtering overlong prompts could be timeconsuming. You cat set the filter_overlong_prompts_workers to use multiprocessing to speed up.
+  filter_overlong_prompts_workers: 1
+  truncation: error
+  image_key: images
+  video_key: videos
+  custom_cls:
+      path: null
+      name: null
+  sample_count:
+    train: -1 # -1 means all
+    val: -1 # -1 means all
+
+actor_rollout_ref:
+  hybrid_engine: True
+  ngpus: null # added for multi-turn
+  role: actor_rollout #set only to actor if only belief computation
+  gen_n: ${multi_turn.train.n}
+  val_only: ${trainer.val_only}
+  resume_mode: ${trainer.resume_mode}
+  model:
+    path: ~/models/deepseek-llm-7b-chat
+    external_lib: null
+    override_config: { }
+    enable_gradient_checkpointing: True
+    use_remove_padding: True
+    use_liger: True
+    lora_rank: 0 # set >0 to enable lora fine-tuning
+    lora_path: lora_adapters
+    skip_lora_adapter_files_on_resume: True # whether to skip loading lora adapter files when resuming from checkpoint, default True as the checkpoint already contains the adapter weights
+    adapters:
+      - name: active_lora
+        r: ${actor_rollout_ref.model.lora_rank} #rank
+        alpha: ${actor_rollout_ref.model.lora_rank} 
+        target_modules: all-linear
+        exclude_modules: null 
+      - name: ema
+        r: ${actor_rollout_ref.model.lora_rank} #rank
+        alpha: ${actor_rollout_ref.model.lora_rank}
+        target_modules: ${actor_rollout_ref.model.adapters[0].target_modules}
+        exclude_modules: null
+    ema_beta: 0.95 # for ema lora adapter updates
+    ema_warmup_steps: 0 # number of steps to skip before starting ema updates
+  actor:
+    state_masking: True #added for multi-turn
+    cot: False #added for multi-turn
+    thinking: False #added for multi-turn
+    strategy: fsdp  # This is for backward-compatibility
+    ppo_mini_batch_size: 16
+    ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
+    ppo_micro_batch_size_per_gpu: 16
+    use_dynamic_bsz: False
+    ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
+    grad_clip: 1.0
+    # pg_losses2 = -advantages * torch.clamp(ratio, 1 - cliprange_low, 1 + cliprange_high)
+    clip_ratio: 0.2 # default value if clip_ratio_low and clip_ratio_high are not specified
+    clip_ratio_low: 0.2
+    clip_ratio_high: 0.28 # from dapo https://github.com/volcengine/verl/tree/main/recipe/dapo
+    clip_ratio_c: 3.0 # lower bound of the value for Dual-clip PPO from https://arxiv.org/pdf/1912.09729
+    tis_imp_ratio_cap: -1 # set to positive values for Truncated Importance Sampling (requires setting `rollout.calculate_log_probs` as True)
+    loss_agg_mode: "token-mean" # / "seq-mean-token-sum" / "seq-mean-token-mean"
+    entropy_coeff: 0
+    use_kl_loss: False # True for GRPO
+    use_torch_compile: True # False to disable torch compile
+    kl_loss_coef: 0.001 # for grpo
+    kl_loss_type: low_var_kl # for grpo
+    ppo_epochs: 1
+    shuffle: False
+    ulysses_sequence_parallel_size: 1 # sp size
+    checkpoint:
+      contents: ['model', 'optimizer', 'extra']  # with 'hf_model' you can save whole model as hf format, now only use sharded model checkpoint to save space
+    optim:
+      lr: 1e-6
+      lr_warmup_steps: -1 # Prioritized. Negative values mean delegating to lr_warmup_steps_ratio.
+      lr_warmup_steps_ratio: 0.  # the total steps will be injected during runtime
+      min_lr_ratio: null   # only useful for warmup with cosine
+      warmup_style: constant  # select from constant/cosine
+      total_training_steps: -1  # must be override by program
+      weight_decay: 0.01
+      betas: [0.9, 0.95]
+    fsdp_config:
+      wrap_policy:
+        # transformer_layer_cls_to_wrap: None
+        min_num_params: 0
+      param_offload: False
+      optimizer_offload: True
+      fsdp_size: -1
+  ref:
+    resource_pool_actor: True # added for multi-turn
+    strategy: fsdp
+    fsdp_config:
+      param_offload: False
+      wrap_policy:
+        # transformer_layer_cls_to_wrap: None
+        min_num_params: 0
+    use_torch_compile: ${actor_rollout_ref.actor.use_torch_compile}
+    log_prob_micro_batch_size: null # will be deprecated, use log_prob_micro_batch_size_per_gpu
+    log_prob_micro_batch_size_per_gpu: 16
+    log_prob_use_dynamic_bsz: ${actor_rollout_ref.actor.use_dynamic_bsz}
+    log_prob_max_token_len_per_gpu: ${actor_rollout_ref.actor.ppo_max_token_len_per_gpu}
+    ulysses_sequence_parallel_size: ${actor_rollout_ref.actor.ulysses_sequence_parallel_size} # sp size
+  rollout:
+    name: vllm
+    mode: sync # sync: LLM, async: AsyncLLM
+    chat_scheduler: null # async chat scheduler, e.g examples.ppo_trainer.naive_chat_scheduler.NaiveChatCompletionScheduler
+    temperature: 1.0 # 0.7
+    top_k: 20 # 0 for hf rollout, -1 for vllm rollout
+    top_p: 0.8
+    use_fire_sampling: False # https://arxiv.org/abs/2410.21236
+    prompt_length: ${data.max_prompt_length}  # not use for opensource
+    response_length: ${data.max_response_length}
+    # for vllm rollout
+    dtype: bfloat16 # should align with FSDP
+    gpu_memory_utilization: 0.5
+    ignore_eos: False
+    enforce_eager: True
+    free_cache_engine: True
+    load_format: dummy_hf #old dummy_dtensor
+    tensor_model_parallel_size: ${actor_rollout_ref.ngpus}
+    max_num_batched_tokens: 8192
+    max_model_len: null
+    max_num_seqs: 1024
+    log_prob_micro_batch_size: null # will be deprecated, use log_prob_micro_batch_size_per_gpu
+    log_prob_micro_batch_size_per_gpu: 16
+    log_prob_use_dynamic_bsz: ${actor_rollout_ref.actor.use_dynamic_bsz}
+    log_prob_max_token_len_per_gpu: ${actor_rollout_ref.actor.ppo_max_token_len_per_gpu}
+    disable_log_stats: True
+    enable_chunked_prefill: True # may get higher throughput when set to True. When activated, Please increase max_num_batched_tokens or decrease max_model_len.
+    # for hf rollout
+    do_sample: True
+    # number of responses (i.e. num sample times)
+    n: 1 
+    detokenize: True
+    engine_kwargs: # inference engine parameters
+      swap_space: null # null means "use the engine default value" (usually 4 GB), setting it to, e.g., 32 means 32 GB
+    val_kwargs:
+      # sampling parameters for validation
+      top_k: 20 #20 # 0 for hf rollout, -1 for vllm rollout
+      top_p: 0.8  #0.8
+      temperature: 0.7 # 0.7 for validation 1.0 for training
+      n: 1
+      do_sample: True # default eager for validation
+
+judge_rollout:
+  env: ${multi_turn.env} #pass the environment name to judge rollout
+  repeated_prompt: True
+  enable: True
+  ngpus: null
+  cot: True
+  thinking: False
+  model:
+    path: ~/models
+    input_tokenizer: ${actor_rollout_ref.model.path}  # set this to null if the chat template is identical
+  rollout:
+    name: vllm
+    mode: sync # sync: LLM, async: AsyncLLM
+    chat_scheduler: null # async chat scheduler, e.g examples.ppo_trainer.naive_chat_scheduler.NaiveChatCompletionScheduler
+    temperature: 0.7
+    top_k: 20 # 0 for hf rollout, -1 for vllm rollout
+    top_p: 0.8
+    use_fire_sampling: False # https://arxiv.org/abs/2410.21236
+    prompt_length: 1600
+    response_length: 200
+    # for vllm rollout
+    dtype: bfloat16 # should align with FSDP
+    gpu_memory_utilization: 0.85
+    ignore_eos: False
+    enforce_eager: True #disable CUDA grapjs, and force pytroch standard eager execution path
+    free_cache_engine: True # offload the kvcache after rollout geenration stage
+    load_format: auto
+    tensor_model_parallel_size: ${judge_rollout.ngpus}
+    max_num_batched_tokens: 8192
+    max_model_len: null
+    max_num_seqs: 1024
+    disable_log_stats: True
+    enable_chunked_prefill: True
+    n: 1
+    detokenize: True
+    engine_kwargs: # inference engine parameters
+      swap_space: null # null means "use the engine default value" (usually 4 GB), setting it to, e.g., 32 means 32 GB
+    val_kwargs:
+      # sampling parameters for validation
+      top_k: 20 # 0 for hf rollout, -1 for vllm rollout
+      top_p: 0.8
+      temperature: 0.7 
+      n: 1
+      do_sample: True # default eager for va
+
+
+critic:
+  rollout_n: ${actor_rollout_ref.rollout.n}
+  strategy: fsdp
+  optim:
+    lr: 1e-5
+    lr_warmup_steps_ratio: 0.  # the total steps will be injected during runtime
+    min_lr_ratio: null   # only useful for warmup with cosine
+    warmup_style: constant  # select from constant/cosine
+    total_training_steps: -1  # must be override by program
+    weight_decay: 0.01
+  model:
+    path: ~/models/deepseek-llm-7b-chat
+    tokenizer_path: ${actor_rollout_ref.model.path}
+    override_config: { }
+    external_lib: ${actor_rollout_ref.model.external_lib}
+    enable_gradient_checkpointing: True
+    use_remove_padding: False
+    fsdp_config:
+      param_offload: False
+      optimizer_offload: False
+      wrap_policy:
+        # transformer_layer_cls_to_wrap: None
+        min_num_params: 0
+      fsdp_size: -1
+  ppo_mini_batch_size: ${actor_rollout_ref.actor.ppo_mini_batch_size}
+  ppo_micro_batch_size: null # will be deprecated, use ppo_micro_batch_size_per_gpu
+  ppo_micro_batch_size_per_gpu: null
+  forward_micro_batch_size: ${critic.ppo_micro_batch_size}
+  forward_micro_batch_size_per_gpu: ${critic.ppo_micro_batch_size_per_gpu}
+  use_dynamic_bsz: ${actor_rollout_ref.actor.use_dynamic_bsz}
+  ppo_max_token_len_per_gpu: 32768 # (${actor_rollout_ref.actor.ppo_max_token_len_per_gpu}) * 2
+  forward_max_token_len_per_gpu: ${critic.ppo_max_token_len_per_gpu}
+  ulysses_sequence_parallel_size: 1 # sp size
+  ppo_epochs: ${actor_rollout_ref.actor.ppo_epochs}
+  shuffle: ${actor_rollout_ref.actor.shuffle}
+  grad_clip: 1.0
+  cliprange_value: 0.5
+  checkpoint:
+    contents: ['model', 'optimizer', 'extra']  # with 'hf_model' you can save whole model as hf format, now only use sharded model checkpoint to save space
+
+reward_model:
+  enable: False
+  strategy: fsdp
+  model:
+    input_tokenizer: ${actor_rollout_ref.model.path}  # set this to null if the chat template is identical
+    path: ~/models/FsfairX-LLaMA3-RM-v0.1
+    external_lib: ${actor_rollout_ref.model.external_lib}
+    use_remove_padding: False
+    fsdp_config:
+      wrap_policy:
+        min_num_params: 0
+      param_offload: False
+      fsdp_size: -1
+  micro_batch_size: null # will be deprecated, use micro_batch_size_per_gpu
+  micro_batch_size_per_gpu: null # set a number
+  max_length: null
+  ulysses_sequence_parallel_size: 1 # sp size
+  use_dynamic_bsz: ${critic.use_dynamic_bsz}
+  forward_max_token_len_per_gpu: ${critic.forward_max_token_len_per_gpu}
+  reward_manager: naive
+  launch_reward_fn_async: False # custom reward function executed async on CPU, during log_prob
+
+custom_reward_function:
+  path: null
+  name: compute_score
+
+algorithm:
+  alpha: 0.1 # for combining episode reward and logprob reward
+  filter_groups:
+    enabled: False #dapo to filer groups of no signal
+    metric: seq_reward # acc / score / seq_reward / seq_final_reward / ...
+    max_num_gen_batches: 10 # Non-positive values mean no upper limit based on dapo sh files https://github.com/volcengine/verl/blob/main/recipe/dapo/test_dapo_7b.sh
+  gamma: 1.0
+  lam: 1.0
+  adv_estimator: grpo
+  norm_adv_in_mtr: False # normalize advantage across all turns
+  clip_adv_in_mtr: False # clip advantage across all turns
+  clip_adv_min: -3.0
+  clip_adv_max: 3.0
+  only_propagate_eog_in_mtr: True # only propagate the end-of-game reward to all turns
+  norm_adv_by_std_in_grpo: True # set to False for dr grpo
+  use_kl_in_reward: False #for grpo
+  kl_penalty: kl  # how to estimate kl divergence
+  kl_ctrl:
+    type: fixed # adaptive or fixed
+    kl_coef: 0.001 #as reported in reinforce++ paper
+    horizon: 10000
+    target_kl: 0.1
+
+trainer:
+  val_only: False
+  balance_batch: False
+  total_epochs: 30
+  total_training_steps: null  # Changed to null to have option of using total_epochs
+  project_name: verl_examples
+  experiment_name: gsm8k
+  logger: [ 'console', 'wandb' ]
+  log_val_generations: 0
+  rollout_data_dir: null # directory for logging the rollout data, no dump if null
+  rollout_freq: 10 #how frequently to dump the rollout data
+  validation_data_dir: null # directory for logging the validation data, no dump if null
+  nnodes: 1
+  n_gpus_per_node: null
+  save_freq: 25
+  # auto: find the last ckpt to resume. If can't find, start from scratch
+  resume_mode: disable # or disable or resume_path if resume_from_path is set
+  resume_from_path: null
+  val_before_train: True
+  test_freq: 25
+  critic_warmup: 0
+  default_hdfs_dir: null
+  del_local_ckpt_after_load: False
+  default_local_dir: checkpoints/${trainer.project_name}/${trainer.experiment_name}
+  max_actor_ckpt_to_keep: null
+  max_critic_ckpt_to_keep: null
+  # The timeout for ray worker group to wait for the register center to be ready
+  ray_wait_register_center_timeout: 300
+
+ray_init:
+  num_cpus: null # `None` means using all CPUs, which might cause hang if limited in systems like SLURM. Please set to a number allowed then.

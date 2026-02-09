@@ -1,0 +1,22 @@
+cot: false
+input_path: delta_belief_rl/env/twenty_questions/config/merged/
+output_path: delta_belief_rl/env/twenty_questions/direct/merged/
+system_prompt:
+  original: true
+data:
+  train:
+    input_name: _all.txt
+    output_name: all.parquet
+    N: -1
+  # rlft_train:
+  #   input_name: rlft_training.txt
+  #   output_name: rlft_training.parquet
+  #   N: -1
+  # sft_train:
+  #   input_name: sft_training.txt
+  #   output_name: sft_training.parquet
+  #   N: -1
+  test:
+    input_name: test.txt
+    output_name: test.parquet
+    N: -1

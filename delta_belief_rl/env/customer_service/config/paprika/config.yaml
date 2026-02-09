@@ -1,0 +1,10 @@
+cot: false
+json_path: delta_belief_rl/env/customer_service/config/paprika/customer_service.json
+input_path: delta_belief_rl/env/customer_service/config/paprika/
+output_path: delta_belief_rl/env/customer_service/direct/paprika/
+system_prompt:
+  original: true
+data:
+  test:
+    output_name: test.parquet
+    N: -1

@@ -1,0 +1,25 @@
+[project]
+name = "delta-belief-rl"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "lightlemma>=0.1.6",
+  "ray[client]>=2.51.1",
+  "torch==2.8.0",
+  "vllm==0.10.2",
+]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true                                # <- critical
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+vllm = { index = "pypi" }

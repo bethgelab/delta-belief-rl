@@ -1,0 +1,10 @@
+cot: false
+input_path: delta_belief_rl/env/guess_my_city/config/paprika/
+output_path: delta_belief_rl/env/guess_my_city/direct/paprika/
+system_prompt:
+  original: true
+data:
+  test:
+    input_name: eval.txt
+    output_name: test.parquet
+    N: -1
