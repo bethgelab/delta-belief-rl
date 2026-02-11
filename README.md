@@ -25,11 +25,7 @@
 
 ## TL;DR
 
-**ΔBelief-RL** uses the change in an agent's own belief about the correct answer as a dense intrinsic reward for training in long-horizon, information-seeking tasks. No critic or process reward model needed — just the agent's self-assessment. Our trained agents (**CIA** — Curious Information-seeking Agents) outperform DeepSeek-V3.2 (670B) with ~98% fewer parameters on our in-distribution test-set, generalize to out-of-distribution tasks, and continue improving beyond the training horizon.
-
-## Abstract
-
-How can we train agents to navigate uncertainty over long horizons? We propose **ΔBelief-RL**, which leverages a language model's own intrinsic beliefs to reward intermediate progress. Our method utilizes the change in the probability an agent assigns to the target solution for credit assignment. By training on synthetic interaction data, ΔBelief-RL teaches information-seeking capabilities that consistently outperform purely outcome-based rewards for RL, with improvements generalizing to out-of-distribution applications ranging from customer service to personalization. Notably, the performance continues to improve as we scale test-time interactions beyond the training horizon, with interaction-efficiency increasing even on Pass@k metrics.
+How can we train agents to navigate uncertainty over long horizons? We propose **ΔBelief-RL**, which uses the change in an agent's own belief about the correct answer as a dense intrinsic reward for training in long-horizon, information-seeking tasks. No critic or process reward model needed — just the agent's self-assessment. Our trained agents (**CIA** — Curious Information-seeking Agents) outperform DeepSeek-V3.2 (670B) with ~98% fewer parameters on our in-distribution test-set, generalize to out-of-distribution tasks, and continue improving beyond the training horizon.
 
 ## Method
 
