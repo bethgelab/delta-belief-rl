@@ -25,7 +25,7 @@
 
 ## TL;DR
 
-**ΔBelief-RL** uses the change in an agent's own belief about the correct answer as a dense intrinsic reward for training in long-horizon, information-seeking tasks. No critic or process reward model needed — just the agent's self-assessment. Our trained agents (**CIA** — Curious Information-seeking Agents) outperform DeepSeek-V3.2 (670B) with ~98% fewer parameters, generalize to out-of-distribution tasks, and continue improving beyond the training horizon.
+**ΔBelief-RL** uses the change in an agent's own belief about the correct answer as a dense intrinsic reward for training in long-horizon, information-seeking tasks. No critic or process reward model needed — just the agent's self-assessment. Our trained agents (**CIA** — Curious Information-seeking Agents) outperform DeepSeek-V3.2 (670B) with ~98% fewer parameters on our in-distribution test-set, generalize to out-of-distribution tasks, and continue improving beyond the training horizon.
 
 ## Abstract
 
