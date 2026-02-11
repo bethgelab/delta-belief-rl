@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intrinsic Credit Assignment for Long Horizon Interaction</title>
+  <meta name="description" content="We propose ΔBelief-RL, which leverages a language model's own intrinsic beliefs to reward intermediate progress in long-horizon information-seeking tasks.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:wght@400;700&family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/style.css">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+
+  <!-- ==================== Hero ==================== -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-title">
+        <h1>Intrinsic Credit Assignment for<br>Long Horizon Interaction</h1>
+        <a href="https://tuebingen.ai/" target="_blank" rel="noopener" class="hero-logo">
+          <img src="static/images/tuebingen-ai-logo-shuffle.png" alt="Tübingen AI Center">
+          <span class="hero-logo-text">Tübingen AI Center</span>
+        </a>
+      </div>
+
+      <div class="authors">
+        <span><a href="https://ilzeamandaa.github.io/">Ilze Amanda Auzina</a><sup class="author-note">*,1,2</sup></span>
+        <span><a href="https://joschkastrueber.github.io/">Joschka Strüber</a><sup class="author-note">*,1,2</sup></span>
+        <span><a href="https://sergiohg.com/">Sergio Hernández-Gutiérrez</a><sup class="author-note">*,1,2</sup></span>
+        <span><a href="https://shash42.github.io/">Shashwat Goel</a><sup class="author-note">3,4</sup></span>
+        <span><a href="https://ameya.prabhu.be/">Ameya Prabhu</a><sup class="author-note">1,2</sup></span>
+        <span><a href="https://bethgelab.org/">Matthias Bethge</a><sup class="author-note">1,2</sup></span>
+      </div>
+      <p class="affiliations">
+        <sup>*</sup>Equal contribution
+      </p>
+      <p class="institutions">
+        <sup>1</sup><a href="https://tuebingen.ai/">Tübingen AI Center</a>&emsp;
+        <sup>2</sup><a href="https://uni-tuebingen.de/">University of Tübingen</a>&emsp;
+        <sup>3</sup><a href="https://www.tuebingen.mpg.de/10020/mpi-fuer-intelligente-systeme">MPI for Intelligent Systems</a>&emsp;
+        <sup>4</sup><a href="https://institute-tue.ellis.eu/">ELLIS Institute Tübingen</a>
+      </p>
+
+      <div class="link-buttons">
+        <!-- TODO: Replace # with actual URLs -->
+        <a href="#" class="btn-arxiv">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          arXiv
+        </a>
+        <a href="#" class="btn-code">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          Code
+        </a>
+        <a href="#" class="btn-paper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Paper PDF
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== Abstract ==================== -->
+  <section>
+    <div class="container">
+      <h2>Abstract</h2>
+      <div class="abstract">
+        <p>
+          How can we train agents to navigate uncertainty over long horizons?
+          In this work, we propose <strong>&Delta;Belief-RL</strong>, which leverages a language model's own intrinsic beliefs
+          to reward intermediate progress. Our method utilizes the change in the probability an agent assigns to the
+          target solution for credit assignment. By training on synthetic interaction data, &Delta;Belief-RL teaches
+          information-seeking capabilities that consistently outperform purely outcome-based rewards for RL, with
+          improvements generalizing to out-of-distribution applications ranging from customer service to personalization.
+          Notably, the performance continues to improve as we scale test-time interactions beyond the training horizon,
+          with interaction-efficiency increasing even on Pass@k metrics. Overall, our work introduces a scalable
+          training strategy for navigating uncertainty over a long-horizon, by enabling credit assignment to
+          intermediate actions via intrinsic &Delta;Belief rewards.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Teaser Figure ==================== -->
+  <section>
+    <div class="container">
+      <div class="figure teaser">
+        <img src="static/images/figure1.png" alt="Main contributions overview: ΔBelief Reward enables dense credit assignment, more sample-efficient training, better generalization, and improved test-time interaction scaling.">
+        <p class="figure-caption">
+          <strong>Main contributions.</strong> We propose a dense reward signal, &Delta;Belief Reward, based on agent
+          intrinsic belief updates in long horizon tasks. We find that <strong>(1)</strong> &Delta;Belief-RL leads to more
+          sample-efficient training, <strong>(2)</strong> our trained agent generalizes better to unseen information-seeking
+          tasks, and <strong>(3)</strong> scales better with increased test-time interaction budget.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Method ==================== -->
+  <section>
+    <div class="container">
+      <h2>Method: Intrinsic Credit Assignment</h2>
+
+      <p>
+        The &Delta;Belief-RL framework leverages an agent's internal beliefs as an intrinsic reward signal, enabling
+        dense credit assignment in probabilistic, long-horizon tasks. We consider a multi-turn interaction setting
+        where an agent must uncover a latent target concept $y \in \mathcal{Y}$ through a trajectory
+        $\tau = \{(a_1,o_1), \ldots, (a_N,o_N)\}$ of actions and observations.
+      </p>
+
+      <h3>Agent Beliefs</h3>
+      <p>
+        We elicit the agent's internal belief by leveraging its underlying token probability distribution.
+        Given an elicitation prompt $e_i$, we calculate the belief at turn $t$ as the probability the policy
+        assigns to the target concept $y$ conditioned on the history $h_t$:
+      </p>
+      <div class="equation">
+        $b_t = p_\theta(y_i \mid h_t, e_i)$
+      </div>
+
+      <h3>&Delta;Belief Reward: Belief Change Signal</h3>
+      <p>
+        By tracking $b_t$ across the trajectory, we quantify how each interaction resolves uncertainty,
+        shifting the model's internal "world view" towards the correct solution. The per-turn belief change is:
+      </p>
+      <div class="equation">
+        $\Delta\text{Belief}_t = \log \frac{b_t}{b_{t-1}} = \log b_t - \log b_{t-1}$
+      </div>
+      <p>
+        This dense, turn-level signal reinforces actions that lead to the most informative updates to the agent's
+        internal world view. Using log-probabilities ensures numerical stability during training.
+      </p>
+
+      <div class="figure">
+        <img src="static/images/beliefs_deepseek_v3.2_base_only.png" alt="Belief updates over time showing correlation with task success" style="max-width: 65%;">
+        <p class="figure-caption">
+          <strong>Belief updates.</strong> Per-turn beliefs about the ground-truth for Qwen3 (1.7B and 4B), split by
+          final outcome. Trajectories were generated by DeepSeek-v3.2. Beliefs steadily increase on average,
+          and the rate of growth strongly correlates with the outcome of the trajectory.
+        </p>
+      </div>
+
+      <h3>Validating the &Delta;Belief Measurement</h3>
+      <p>
+        We confirm that optimizing for &Delta;Belief leads to better task success using a best-of-$n$ sampling
+        intervention. At each turn, we sample $n=8$ candidate questions, simulate the environment's response
+        for each, and select the action that maximizes the immediate belief change:
+      </p>
+      <div class="equation">
+        $a_t \leftarrow \arg\max_{k \in \{1,\ldots,n\}} \; \Delta\text{Belief}(a_{t,k})$
+      </div>
+
+      <div class="figure">
+        <img src="static/images/relic_sampling_comparison.png" alt="Best-of-8 sampling with ΔBelief shows significant performance improvements" style="max-width: 65%;">
+        <p class="figure-caption">
+          <strong>Best-of-8 sampling with &Delta;Belief.</strong> Success rate on the 20 Questions task for baseline
+          models after SFT. Sampling 8 questions at every turn and selecting the one that maximizes &Delta;Belief
+          leads to a significant rise in performance across all model sizes.
+        </p>
+      </div>
+
+      <h3>Training with Reinforcement Learning</h3>
+      <p>
+        We augment the sparse outcome reward with our dense intrinsic signal at every turn $t$. The per-turn reward is:
+      </p>
+      <div class="equation">
+        $r_t = \underbrace{r^{\mathrm{eog}}}_{\text{trajectory outcome}} + \underbrace{\lambda\, \max(\Delta\text{Belief}_t, 0)}_{\text{intrinsic exploration}} + \underbrace{r_p}_{\text{efficiency penalty}}$
+      </div>
+      <p>
+        where $\lambda$ scales the belief-based reward. We clip the intrinsic reward at zero, ensuring agents are
+        rewarded for increasing belief in the correct concept without being penalized for temporary decreases
+        in confidence. We use <strong>Turn-wise GRPO</strong>, computing advantages at the turn level rather than
+        applying the same reward across the entire trajectory.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== Results ==================== -->
+  <section>
+    <div class="container">
+      <h2>Results</h2>
+
+      <h3>&Delta;Belief-RL Training Improves Interaction-Efficiency</h3>
+
+      <p class="table-caption">
+        <strong>Success rate on the test set.</strong> Average success rates and Pass@k<a href="#ref-4" class="cite">[4]</a> of the SFT Baseline, StarPO<a href="#ref-1" class="cite">[1]</a>,
+        and CIA on a held-out test set. Across both model sizes, CIA consistently outperforms all baselines.
+      </p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Mean@8 &pm; std</th>
+              <th>Pass@8</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Baseline (1.7B)</td>
+              <td>9.97% &pm; 1.04%</td>
+              <td>32.03%</td>
+            </tr>
+            <tr>
+              <td>StarPO (1.7B)</td>
+              <td>16.54% &pm; 1.32%</td>
+              <td>45.73%</td>
+            </tr>
+            <tr class="highlight">
+              <td><strong>CIA (ours, 1.7B)</strong></td>
+              <td class="best">24.80% &pm; 1.10%</td>
+              <td class="best">53.10%</td>
+            </tr>
+            <tr><td colspan="3" style="height:4px; background:#e8e8e8; padding:0;"></td></tr>
+            <tr>
+              <td>Baseline (4B)</td>
+              <td>13.34% &pm; 1.05%</td>
+              <td>36.87%</td>
+            </tr>
+            <tr>
+              <td>StarPO (4B)</td>
+              <td>24.36% &pm; 1.18%</td>
+              <td>59.12%</td>
+            </tr>
+            <tr class="highlight">
+              <td><strong>CIA (ours, 4B)</strong></td>
+              <td class="best">33.72% &pm; 1.26%</td>
+              <td class="best">63.97%</td>
+            </tr>
+            <tr><td colspan="3" style="height:4px; background:#e8e8e8; padding:0;"></td></tr>
+            <tr>
+              <td>DeepSeek-V3.2</td>
+              <td>14.35% &pm; 0.87%</td>
+              <td>47.34%</td>
+            </tr>
+            <tr>
+              <td>Qwen3-235B-A22B-Instr.</td>
+              <td>8.83% &pm; 0.87%</td>
+              <td>27.71%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Our CIA-1.7B model outperforms DeepSeek-V3.2 (670B) by <strong>10.45%</strong>, and our CIA-4B model
+        outperforms it by <strong>19.37%</strong>, despite using ~98% fewer parameters.
+        This supports our hypothesis that specialized training is essential for active information-seeking
+        where web-scale pretraining alone falls short.
+      </p>
+
+      <h3>&Delta;Belief Reward Promotes Efficient Exploration</h3>
+      <div class="figure">
+        <div class="figure-stack">
+          <img src="static/images/num_questions.png" alt="Mean number of questions per episode during training">
+          <img src="static/images/num_repeated_questions.png" alt="Mean fraction of repeated questions during training">
+        </div>
+        <p class="figure-caption">
+          <strong>Training dynamics.</strong> Mean number of questions per episode (top) and mean fraction of
+          repeated questions (bottom) during RL training. Across both Qwen3-1.7B and Qwen3-4B,
+          &Delta;Belief-RL reduces the number of turns required and suppresses redundant queries more rapidly
+          than standard GRPO (StarPO<a href="#ref-1" class="cite">[1]</a>).
+        </p>
+      </div>
+
+      <h3>&Delta;Belief-RL Leads to Faster Belief Updates</h3>
+      <div class="figure">
+        <div class="figure-stack">
+          <img src="static/images/beliefs_1.7b.png" alt="Belief update dynamics for 1.7B models">
+          <img src="static/images/beliefs_4b.png" alt="Belief update dynamics for 4B models">
+        </div>
+        <p class="figure-caption">
+          <strong>Belief-update dynamics.</strong> Normalized elicited log-probability of the correct concept
+          as a function of the number of interactions for 1.7B models (top) and 4B models (bottom).
+          At the 4B scale, CIA shows the largest and most sustained increase in belief updates,
+          while StarPO remains close to the SFT baseline.
+        </p>
+      </div>
+
+      <h3>&Delta;Belief-RL Improves Pass@k Success Rates</h3>
+      <div class="figure">
+        <div class="figure-row">
+          <div class="figure-item">
+            <img src="static/images/20qs_passk_1.7b.png" alt="Pass@k results for 1.7B models">
+          </div>
+          <div class="figure-item">
+            <img src="static/images/20qs_passk_4b.png" alt="Pass@k results for 4B models">
+          </div>
+        </div>
+        <p class="figure-caption">
+          <strong>Pass@k on Twenty Questions.</strong> CIA consistently achieves higher pass@k<a href="#ref-4" class="cite">[4]</a> than the
+          Baseline across the entire range of $k$ (up to 128), confirming that the gains extend beyond
+          simple policy sharpening to genuinely improved exploration.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== Generalization ==================== -->
+  <section>
+    <div class="container">
+      <h2>Generalization and Applications</h2>
+
+      <h3>Test-Time Interaction Scaling</h3>
+      <p>
+        During training, episodes are limited to 20 turns. We investigate whether information-seeking capabilities
+        generalize to longer interactions by increasing the budget to 50 turns.
+      </p>
+      <div class="figure">
+        <div class="figure-stack">
+          <img src="static/images/1.7b_interaction_scaling_1.png" alt="Test-time interaction scaling for 1.7B models">
+          <img src="static/images/4b_interaction_scaling_1.png" alt="Test-time interaction scaling for 4B models">
+        </div>
+        <p class="figure-caption">
+          <strong>Test-time interaction scaling.</strong> Average success rate as a function of the interaction budget
+          (up to 50 turns) for 1.7B models (top) and 4B models (bottom). CIA exhibits larger performance gains
+          and continues to improve as the interaction budget extends beyond the 20-turn training regime.
+          At 4B scale, the increase in absolute success rates from 20 to 50 turns is double for CIA at +26%, compared
+           to +13% for StarPO.
+        </p>
+      </div>
+
+      <h3>Out-of-Distribution Generalization</h3>
+      <p>
+        We evaluate OOD generalization using <em>Guess My City</em> and <em>Murder Mystery</em><a href="#ref-2" class="cite">[2]</a>, two
+        information-seeking tasks not seen during training.
+      </p>
+      <div class="figure">
+        <img src="static/images/passk_benchmarks_k8_games.png" alt="Out-of-distribution generalization results" style="max-width: 70%;">
+        <p class="figure-caption">
+          <strong>OOD generalization.</strong> Pass@k<a href="#ref-4" class="cite">[4]</a> on two out-of-distribution benchmarks
+          (<em>Guess My City</em> and <em>Murder Mystery</em><a href="#ref-2" class="cite">[2]</a>). Dark bars show Pass@1; lighter stacked
+          increments show Pass@8. CIA exhibits robust generalization, consistently surpassing SFT and
+          StarPO<a href="#ref-1" class="cite">[1]</a> baselines across all tested environments.
+        </p>
+      </div>
+
+      <h3>Practical Applications</h3>
+      <p>
+        We further test generalization on settings that mirror practical applications: <em>User Personalization</em><a href="#ref-3" class="cite">[3]</a>
+        (multi-turn preference elicitation) and <em>Customer Service</em><a href="#ref-2" class="cite">[2]</a> (identifying broken functionality
+        through diagnostic questioning).
+      </p>
+      <div class="figure">
+        <div class="figure-row">
+          <div class="figure-item">
+            <img src="static/images/passk_cs_k8.png" alt="Customer Service benchmark results">
+          </div>
+          <div class="figure-item">
+            <img src="static/images/user_personalization.png" alt="User Personalization benchmark results">
+          </div>
+        </div>
+        <p class="figure-caption">
+          <strong>Practical applications.</strong> Mean scores on the OOD <em>Customer Service</em><a href="#ref-2" class="cite">[2]</a> (left) and
+          <em>User Personalization</em><a href="#ref-3" class="cite">[3]</a> (right) benchmarks. Across both model sizes, CIA strongly outperforms the
+          previous SoTA method, StarPO<a href="#ref-1" class="cite">[1]</a>. On Customer Service, CIA outperforms StarPO by 5.06% (1.7B) and
+          11.13% (4B). On User Personalization, CIA offers up to 15% improvements over existing methods.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Conclusion ==================== -->
+  <section>
+    <div class="container">
+      <h2>Conclusion</h2>
+      <p>
+        We demonstrate that an agent's internal belief shifts can effectively guide learning in long-horizon tasks.
+        By providing fine-grained credit assignment for intermediate actions, &Delta;Belief-RL significantly
+        enhances learning efficiency in a compute-efficient manner: measuring the contribution of individual
+        actions without separate critic or reward models.
+      </p>
+      <p>
+        Trained on the 20 Questions task, our CIA models at the 1.7B&ndash;4B scale not only outperform prior
+        state-of-the-art methods for multi-turn training, but also much larger models such as DeepSeek-V3.2. 
+        Notably, improved performance generalizes to extended interaction horizons and diverse out-of-distribution 
+        applications including customer service and user personalization.
+      </p>
+      <p>
+        Much like humans evaluate actions internally by judging progress towards their goals, future advancements
+        in belief calibration may allow agents to train increasingly from intrinsic signals. Because &Delta;Belief-RL
+        is agnostic to the underlying RL algorithm, it remains a versatile framework for continued exploration
+        across diverse domains and architectures.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== BibTeX ==================== -->
+  <section>
+    <div class="container">
+      <h2>BibTeX</h2>
+      <div class="bibtex-wrapper">
+        <button class="copy-btn" onclick="copyBibtex()">Copy</button>
+        <div class="bibtex" id="bibtex">@article{ica2026,
+  title  = {Intrinsic Credit Assignment for Long Horizon Interaction},
+  author = {Auzina, Ilze Amanda and Strüber, Joschka and Hernández-Gutiérrez, Sergio and Goel, Shashwat and Prabhu, Ameya and Bethge, Matthias},
+  year   = {2026}
+}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== References ==================== -->
+  <section>
+    <div class="container">
+      <h2>References</h2>
+      <div class="references">
+        <div class="reference" id="ref-1">
+          <span class="ref-number">[1]</span>
+          <span class="ref-authors">Zihan Wang, Kangrui Wang, Qineng Wang, et al.</span>
+          <span class="ref-title">RAGEN: Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning.</span>
+          <span class="ref-venue">arXiv preprint arXiv:2504.20073, 2025.</span>
+          <a href="https://arxiv.org/abs/2504.20073" target="_blank" rel="noopener">[arXiv]</a>
+        </div>
+
+        <div class="reference" id="ref-2">
+          <span class="ref-number">[2]</span>
+          <span class="ref-authors">Fahim Tajwar, Yiding Jiang, Abitha Thankaraj, Sumaita Sadia Rahman, J Zico Kolter, Jeff Schneider, and Russ Salakhutdinov.</span>
+          <span class="ref-title">Training a Generally Curious Agent.</span>
+          <span class="ref-venue">International Conference on Machine Learning (ICML), 2025.</span>
+          <a href="https://openreview.net/forum?id=UeB3Hdrhda" target="_blank" rel="noopener">[OpenReview]</a>
+        </div>
+
+        <div class="reference" id="ref-3">
+          <span class="ref-number">[3]</span>
+          <span class="ref-authors">Chinmaya Andukuri, Jan-Philipp Fränken, Tobias Gerstenberg, and Noah Goodman.</span>
+          <span class="ref-title">STaR-GATE: Teaching Language Models to Ask Clarifying Questions.</span>
+          <span class="ref-venue">First Conference on Language Modeling (COLM), 2024.</span>
+          <a href="https://openreview.net/forum?id=CrzAj0kZjR" target="_blank" rel="noopener">[OpenReview]</a>
+        </div>
+
+        <div class="reference" id="ref-4">
+          <span class="ref-number">[4]</span>
+          <span class="ref-authors">Mark Chen, Jerry Tworek, Heewoo Jun, et al.</span>
+          <span class="ref-title">Evaluating Large Language Models Trained on Code.</span>
+          <span class="ref-venue">arXiv preprint arXiv:2107.03374, 2021.</span>
+          <a href="https://arxiv.org/abs/2107.03374" target="_blank" rel="noopener">[arXiv]</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== Footer ==================== -->
+  <footer>
+    <div class="container">
+      <p>
+        The template for this project page is adapted from
+        <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    function copyBibtex() {
+      const text = document.getElementById('bibtex').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>

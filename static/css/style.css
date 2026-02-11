@@ -1,0 +1,593 @@
+/* ===== Reset & Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.7;
+  color: #2c3e50;
+  background: #fdfdfd;
+}
+
+/* ===== Layout ===== */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section {
+  padding: 32px 0;
+}
+
+section + section {
+  border-top: 1px solid #e8e8e8;
+}
+
+/* ===== Hero / Header ===== */
+.hero {
+  text-align: center;
+  padding: 60px 0 40px;
+  background: linear-gradient(180deg, #f0f4f8 0%, #fdfdfd 100%);
+}
+
+.hero-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #1a1a2e;
+  margin-bottom: 0;
+  letter-spacing: -0.02em;
+}
+
+.hero-logo {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+}
+
+.hero-logo img {
+  height: 180px;
+  width: auto;
+}
+
+.hero-logo-text {
+  display: block;
+  margin-top: -16px;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif;
+  font-size: 1.0rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.hero-logo:hover .hero-logo-text {
+  color: #2980b9;
+}
+
+/* ===== Authors ===== */
+.authors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 20px;
+  margin-bottom: 12px;
+  font-size: 1.05rem;
+}
+
+.authors a {
+  color: #34495e;
+  text-decoration: none;
+}
+
+.authors a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.author-note {
+  font-size: 0.75rem;
+  vertical-align: super;
+  color: #7f8c8d;
+}
+
+.affiliations {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+}
+
+.institutions {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  margin-bottom: 24px;
+}
+
+.institutions a {
+  color: #7f8c8d;
+  text-decoration: none;
+}
+
+.institutions a:hover {
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.institutions sup {
+  font-size: 0.75rem;
+  color: #7f8c8d;
+  margin-bottom: 24px;
+}
+
+/* ===== Link Buttons ===== */
+.link-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.link-buttons a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-paper {
+  background: #2c3e50;
+  color: #fff;
+}
+
+.btn-paper:hover {
+  background: #1a252f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-code {
+  background: #fff;
+  color: #2c3e50;
+  border: 1.5px solid #2c3e50;
+}
+
+.btn-code:hover {
+  background: #f0f4f8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-arxiv {
+  background: #b31b1b;
+  color: #fff;
+}
+
+.btn-arxiv:hover {
+  background: #8b1515;
+  box-shadow: 0 2px 8px rgba(179, 27, 27, 0.25);
+}
+
+/* ===== Section Headings ===== */
+h2 {
+  font-family: 'Noto Serif', Georgia, serif;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+/* ===== Abstract ===== */
+.abstract {
+  background: #f7f9fb;
+  border-left: 4px solid #2c3e50;
+  padding: 24px 28px;
+  border-radius: 0 8px 8px 0;
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+/* ===== Figures ===== */
+.figure {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.figure.teaser img {
+  max-width: 60%;
+}
+
+.figure-caption {
+  margin-top: 10px;
+  font-size: 0.88rem;
+  color: #555;
+  line-height: 1.6;
+  text-align: left;
+  padding: 0 20px;
+}
+
+.figure-caption strong {
+  color: #2c3e50;
+}
+
+.figure-row {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.figure-row .figure-item {
+  flex: 1;
+  min-width: 280px;
+  max-width: 40%;
+  text-align: center;
+}
+
+.figure-row .figure-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.figure-row .figure-item .figure-caption {
+  padding: 0 8px;
+}
+
+.figure-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.figure-stack img {
+  max-width: 60%;
+}
+
+/* ===== Tables ===== */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 24px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+thead {
+  background: #2c3e50;
+  color: #fff;
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+
+tbody tr:hover {
+  background: #f7f9fb;
+}
+
+tbody tr.highlight {
+  background: #eef5fb;
+  font-weight: 500;
+}
+
+td.best {
+  font-weight: 700;
+  color: #1a6b3c;
+}
+
+.table-caption {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+/* ===== Equations ===== */
+.equation {
+  margin: 20px 0;
+  text-align: center;
+  font-size: 1.05rem;
+  overflow-x: auto;
+}
+
+/* ===== BibTeX ===== */
+.bibtex-wrapper {
+  position: relative;
+}
+
+.bibtex {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  padding: 20px 24px;
+  border-radius: 8px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #45475a;
+  color: #cdd6f4;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.copy-btn:hover {
+  background: #585b70;
+}
+
+/* ===== In-text Citations ===== */
+a.cite {
+  color: #2980b9;
+  text-decoration: none;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin-left: 2px;
+  white-space: nowrap;
+}
+
+a.cite:hover {
+  text-decoration: underline;
+}
+
+/* ===== References ===== */
+.references {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.reference {
+  margin-bottom: 16px;
+  padding-left: 32px;
+  text-indent: -32px;
+  scroll-margin-top: 80px;
+}
+
+.reference:last-child {
+  margin-bottom: 0;
+}
+
+.ref-number {
+  display: inline-block;
+  min-width: 28px;
+  font-weight: 600;
+  color: #2980b9;
+}
+
+.ref-authors {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.ref-title {
+  font-style: italic;
+  color: #34495e;
+}
+
+.ref-venue {
+  color: #555;
+}
+
+.reference a {
+  color: #2980b9;
+  text-decoration: none;
+  font-size: 0.85rem;
+  margin-left: 6px;
+}
+
+.reference a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  padding: 32px 0;
+  font-size: 0.85rem;
+  color: #95a5a6;
+  border-top: 1px solid #e8e8e8;
+}
+
+footer a {
+  color: #7f8c8d;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: #2c3e50;
+  text-decoration: underline;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero-title {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .hero-logo {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-logo img {
+    height: 80px;
+  }
+
+  .hero-logo-text {
+    margin-top: -8px;
+    font-size: 0.85rem;
+  }
+
+  .hero h1 {
+    font-size: 1.7rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  section {
+    padding: 28px 0;
+  }
+
+  .figure.teaser img {
+    max-width: 100%;
+  }
+
+  .figure-row .figure-item {
+    max-width: 100%;
+  }
+
+  .figure-caption {
+    max-width: 100%;
+  }
+
+  .abstract {
+    padding: 18px 20px;
+  }
+
+  .bibtex {
+    font-size: 0.75rem;
+  }
+}
+
+/* ===== Method highlight box ===== */
+.method-highlight {
+  background: #f0f7ff;
+  border: 1px solid #b8d4f0;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+
+.method-highlight p {
+  margin-bottom: 8px;
+}
+
+.method-highlight p:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Section separator with label ===== */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 24px;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+/* ===== Paragraphs & text ===== */
+p {
+  margin-bottom: 16px;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+strong {
+  font-weight: 600;
+}
+
+/* ===== MathJax tweaks ===== */
+.MathJax {
+  font-size: 1em !important;
+}
+
+/* ===== Placeholder notice ===== */
+.placeholder {
+  color: #e74c3c;
+  font-style: italic;
+}
+
+/* ===== Results grid ===== */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 24px 0;
+}
+
+.results-grid .figure {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+}
