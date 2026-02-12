@@ -34,12 +34,12 @@
         <span><a href="https://ilzeamandaa.github.io/">Ilze Amanda Auzina</a><sup class="author-note">*,1,2</sup></span>
         <span><a href="https://joschkastrueber.github.io/">Joschka Strüber</a><sup class="author-note">*,1,2</sup></span>
         <span><a href="https://sergiohg.com/">Sergio Hernández-Gutiérrez</a><sup class="author-note">*,1,2</sup></span>
-        <span><a href="https://shash42.github.io/">Shashwat Goel</a><sup class="author-note">3,4</sup></span>
-        <span><a href="https://ameya.prabhu.be/">Ameya Prabhu</a><sup class="author-note">1,2</sup></span>
-        <span><a href="https://bethgelab.org/">Matthias Bethge</a><sup class="author-note">1,2</sup></span>
+        <span><a href="https://shash42.github.io/">Shashwat Goel</a><sup class="author-note">&dagger;,3,4</sup></span>
+        <span><a href="https://ameya.prabhu.be/">Ameya Prabhu</a><sup class="author-note">&dagger;,1,2</sup></span>
+        <span><a href="https://bethgelab.org/">Matthias Bethge</a><sup class="author-note">&dagger;,1,2</sup></span>
       </div>
       <p class="affiliations">
-        <sup>*</sup>Equal contribution
+        <sup>*</sup>Equal contribution, <sup>&dagger;</sup>Equal supervision
       </p>
       <p class="institutions">
         <sup>1</sup><a href="https://tuebingen.ai/">Tübingen AI Center</a>&emsp;
@@ -157,7 +157,7 @@
       </div>
 
       <div class="figure">
-        <img src="static/images/relic_sampling_comparison.png" alt="Best-of-8 sampling with ΔBelief shows significant performance improvements" style="max-width: 65%;">
+        <img src="static/images/relic_sampling_comparison.png" alt="Best-of-8 sampling with ΔBelief shows significant performance improvements" style="max-width: 75%;">
         <p class="figure-caption">
           <strong>Best-of-8 sampling with &Delta;Belief.</strong> Success rate on the 20 Questions task for baseline
           models after SFT. Sampling 8 questions at every turn and selecting the one that maximizes &Delta;Belief
@@ -255,12 +255,8 @@
         where web-scale pretraining alone falls short.
       </p>
 
-      <h3>&Delta;Belief Reward Promotes Efficient Exploration</h3>
       <div class="figure">
-        <div class="figure-stack">
-          <img src="static/images/num_questions.png" alt="Mean number of questions per episode during training">
-          <img src="static/images/num_repeated_questions.png" alt="Mean fraction of repeated questions during training">
-        </div>
+        <img src="static/images/training_dynamics_combined.png" alt="Mean number of questions and fraction of repeated questions per episode during training",  style="max-width: 90%">
         <p class="figure-caption">
           <strong>Training dynamics.</strong> Mean number of questions per episode (top) and mean fraction of
           repeated questions (bottom) during RL training. Across both Qwen3-1.7B and Qwen3-4B,
@@ -271,10 +267,7 @@
 
       <h3>&Delta;Belief-RL Leads to Faster Belief Updates</h3>
       <div class="figure">
-        <div class="figure-stack">
-          <img src="static/images/beliefs_1.7b.png" alt="Belief update dynamics for 1.7B models">
-          <img src="static/images/beliefs_4b.png" alt="Belief update dynamics for 4B models">
-        </div>
+        <img src="static/images/beliefs_combined.png" alt="Belief update dynamics for 1.7B and 4B models", style="max-width: 90%;">
         <p class="figure-caption">
           <strong>Belief-update dynamics.</strong> Normalized elicited log-probability of the correct concept
           as a function of the number of interactions for 1.7B models (top) and 4B models (bottom).
@@ -315,8 +308,7 @@
       </p>
       <div class="figure">
         <div class="figure-stack">
-          <img src="static/images/1.7b_interaction_scaling_1.png" alt="Test-time interaction scaling for 1.7B models">
-          <img src="static/images/4b_interaction_scaling_1.png" alt="Test-time interaction scaling for 4B models">
+          <img src="static/images/interaction_scaling_combined.png" alt="Test-time interaction scaling for 1.7B and 4B models", style="max-width: 90%;">
         </div>
         <p class="figure-caption">
           <strong>Test-time interaction scaling.</strong> Average success rate as a function of the interaction budget
