@@ -15,7 +15,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-B31B1B.svg)](TODO)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://bethgelab.github.io/delta-belief-rl/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
 
