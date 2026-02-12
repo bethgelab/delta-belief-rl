@@ -5,11 +5,11 @@
 **[Ilze Amanda Auzina](https://ilzeamandaa.github.io/)\*,
 [Joschka Strüber](https://joschkastrueber.github.io/)\*,
 [Sergio Hernández-Gutiérrez](https://sergiohg.com/)\*,
-[Shashwat Goel](https://shash42.github.io/),
-[Ameya Prabhu](https://ameya.prabhu.be/),
-[Matthias Bethge](https://bethgelab.org/)**
+[Shashwat Goel](https://shash42.github.io/)†,
+[Ameya Prabhu](https://ameya.prabhu.be/)†,
+[Matthias Bethge](https://bethgelab.org/)†**
 
-*\* Equal contribution*
+*\* Equal contribution &emsp; † Equal advising*
 
 **[Tübingen AI Center](https://tuebingen.ai/) · [University of Tübingen](https://uni-tuebingen.de/) · [MPI for Intelligent Systems](https://www.tuebingen.mpg.de/10020/mpi-fuer-intelligente-systeme) · [ELLIS Institute Tübingen](https://institute-tue.ellis.eu/)**
 
