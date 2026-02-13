@@ -21,7 +21,7 @@ source scripts/slurm_setup.sh
 
 
 SEED="${1:-42}"
-: "${BASE_MODEL:=iaa01/qwen3-4b-elicit-pos-ckpt56}" && export BASE_MODEL
+: "${BASE_MODEL:=iaa01/CIA-4B}" && export BASE_MODEL
 : "${ORACLE_MODEL:=qwen/qwen3-235b-a22b-2507}" && export ORACLE_MODEL
 : "${EXPERIMENT_NAME:=eval_cia_cs}" && export EXPERIMENT_NAME
 
