@@ -15,6 +15,7 @@
 
 [![alphaXiv](https://img.shields.io/badge/alphaXiv-Paper-%23c83232)](https://www.alphaxiv.org/abs/intrinsic-credit-assignment)
 [![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://bethgelab.github.io/delta-belief-rl/)
+[![Models](https://img.shields.io/badge/-HuggingFace-3B4252?style=flat&logo=huggingface&logoColor=)](https://huggingface.co/collections/bethgelab/delta-belief-rl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
