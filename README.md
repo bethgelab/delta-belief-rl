@@ -1,195 +1,227 @@
+<div align="center">
 
-## To Install the Repository 
-clone the repo including its submodules via
-```
-git clone --recurse-submodules <repository-url>
-```
+# Intrinsic Credit Assignment for Long Horizon Interaction
 
-follow instruction in delta_belief_rl/README.md
+**[Ilze Amanda Auzina](https://ilzeamandaa.github.io/)\*,
+[Joschka Strüber](https://joschkastrueber.github.io/)\*,
+[Sergio Hernández-Gutiérrez](https://sergiohg.com/)\*,
+[Shashwat Goel](https://shash42.github.io/)†,
+[Ameya Prabhu](https://ameya.prabhu.be/)†,
+[Matthias Bethge](https://bethgelab.org/)†**
 
+*\* Equal contribution &emsp; † Equal supervision*
 
-## General Run Settings
-> for an example see _scripts/dense_rewards/qwen3-1.7b-sft.sh_
+**[Tübingen AI Center](https://tuebingen.ai/) · [University of Tübingen](https://uni-tuebingen.de/) · [MPI for Intelligent Systems](https://www.tuebingen.mpg.de/10020/mpi-fuer-intelligente-systeme) · [ELLIS Institute Tübingen](https://institute-tue.ellis.eu/)**
 
-Always specify:
-- the number of GPUs used 
-- which questioner model to use 
-- which judge model to use 
-```
-CUDA_VISIBLE_DEVICES:=0,1
-BASE_MODEL:=Klingspor/lta_singleturn_hard_sft_qwen3-1.7b
-ORACLE_MODEL:=Qwen/Qwen2.5-14B-Instruct
-```
-Furthmore, you need to manually specify the number of gpus used per model
-```
-actor_rollout_ref.ngpus=1
-judge_rollout.ngpus=1
-```
-Lastly, specify the experiment name:
-```
-EXPERIMENT_NAME:=<your_experiment_name>
-```
-Upon running there will be:
-- a log file generated in logs/
-- model checkpoints generated in checkpoints/
-- model outputs (game rollouts) stored in
-    - train_rollout
-    - validation
+[![alphaXiv](https://img.shields.io/badge/alphaXiv-Paper-%23c83232)](https://www.alphaxiv.org/abs/intrinsic-credit-assignment)
+[![Project Page](https://img.shields.io/badge/Project-Page-blue.svg)](https://bethgelab.github.io/delta-belief-rl/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+</div>
 
-## Spcific Training and Validation Run Details
-### 1. Dense Loss with PPO GAE
-> for an example script see _scripts/dense_rewards/qwen3-1.7b-sft.sh_
+<p align="center">
+  <img src="static/images/figure1.png" alt="Main contributions overview" width="60%">
+</p>
 
-to enable set (1) logprob computation to true, (2) advantage estiamtion as gae, and (3) NOT offload actor model params as we need them iteratively to compute the logprobs also during game play (should be faster than constantly offloading and onloading):
-```
-multi_turn.logprob_reward.enable=true
-algorithm.adv_estimator=gae
-actor_rollout_ref.actor.fsdp_config.param_offload=false
-```
-To specify a different difference computation set (deafault is 'step'):
-```
-- basewise difference:  multi_turn.logprob_reward.diff_method='base' 
-```
+## TL;DR
 
+How can we train agents to navigate uncertainty over long horizons? We propose **ΔBelief-RL**, which uses the change in an agent's own belief about the correct answer as a dense intrinsic reward for training in long-horizon, information-seeking tasks. No critic or process reward model needed — just the agent's self-assessment. Our trained agents (**CIA** — Curious Information-seeking Agents) outperform DeepSeek-V3.2 (670B) with ~98% fewer parameters on our in-distribution test-set, generalize to out-of-distribution tasks, and continue improving beyond the training horizon.
 
-last note, currently we are using sum wise aggregation for secrets that span multiple tokens, this can be changed to mean by passing:
-```
-multi_turn.logprob_reward.agg='mean' \
-```
+## Method
 
-checklist tested runs:
-- [x] gae ppo loss with stepwise loss 
-- [x] gae ppo loss with basewise loss 
+ΔBelief-RL leverages an agent's internal beliefs as an intrinsic reward signal, enabling dense credit assignment in probabilistic, long-horizon tasks. In a multi-turn interaction setting where an agent must uncover a latent target concept through a trajectory of actions and observations:
 
+**1. Agent Beliefs** — We elicit the agent's internal belief by leveraging its underlying token probability distribution over the target concept at each turn.
 
-### 2. Sparse Loss with GRPO 
-> for an example script see _scripts/sparse_rewards/qwen3-1.7b-sft.sh_
+**2. ΔBelief Reward** — The per-turn belief change is computed as:
 
-For sparse loss computation with GRPO training (1) disable logprob computation; (2) set number of rollouts for training; (3) set advantage estimation to grpo
-```
-multi_turn.logprob_reward.enable=false
-multi_turn.train.n=5
-algorithm.adv_estimator=grpo
-```
-the default set-up is standard GRPO with normalisation by std, if you want to run Dr. GRPO set:
-```
-algorithm.norm_adv_by_std_in_grpo=false
-```
+$$\Delta\text{Belief}_t = \log b_t - \log b_{t-1}$$
 
-#### 2.1 DAPO GRPO Training
-> for an example script see _scripts/sparse_rewards/qwen3-1.7b-sft-dapo.sh_
+**3. Training Reward** — The sparse outcome reward is augmented with the dense intrinsic signal:
 
-if you want to ran DAPO, set: 
-```
-algorithm.filter_groups.enable=true
-```
-default parameter for how many time to recompute the batch for a valid sample size is set to 10, can be adjusted via:
-```
-algorithm.filter_groups.max_num_gen_batches=..
-```
+$$r_t = \underbrace{r^{\mathrm{eog}}}_{\text{trajectory outcome}} + \underbrace{\lambda\, \max(\Delta\text{Belief}_t, 0)}_{\text{intrinsic exploration}} + \underbrace{r_p}_{\text{efficiency penalty}}$$
 
+We use **Turn-wise GRPO**, computing advantages at the turn level rather than applying the same reward across the entire trajectory.
 
-#### 2.2. Multi-Step Prompt for GRPO Training
-> for an example script see _scripts/sparse_rewards/qwen3-1.7b-sft-mp.sh_
+<p align="center">
+  <img src="static/images/beliefs_deepseek_v3.2_base_only.png" alt="Belief updates over time" width="50%">
+</p>
+<p align="center"><em>Beliefs steadily increase on average, and the rate of growth strongly correlates with the outcome of the trajectory.</em></p>
 
-if you want to ran multi-step prompt GRPO training, specify the correct training file as: 
-```
-data.train_files=delta_belief_rl/env/twenty_questions/direct/multi_step/multiturn_grpo_all_skip_2_easy_unique.parquet
-```
-and reduce the number of training steps:
-```
-multi_turn.max_turns.train=5
-```
+## Key Results
 
-checklist tested runs:
-- [x] standard grpo (looks like dapo was running, yes, set the wron param)
-- [x] dapo
-- [x] multi-step prompt
+### CIA outperforms much larger models on 20 Questions
 
+<div align="center">
 
-### 3. Belief computation on pregenerated data 
-> for an example script see _scripts/beliefs_only/qwen3-1.7b-sft.sh_
-can be ran on a single gpu as only transformer model needed. To only 'activate' the questioner model set (default is 'actor_rollout'):
-```
-actor_rollout_ref.role='actor'
-trainer.belief_only=true 
-```
-to disable the judge model set:
-```
-judge_rollout.enable=false
-```
-spcify which model's generations to use as:
-```
-data.val_files=delta_belief_rl/env/twenty_questions/direct/multi_step/multiturn_grpo_best_no_skip_test_gemini_unique.parquet 
+| Method | Mean@8 ± std | Pass@8 |
+|:---|:---:|:---:|
+| Baseline (1.7B) | 9.97% ± 1.04% | 32.03% |
+| StarPO (1.7B) | 16.54% ± 1.32% | 45.73% |
+| **CIA (ours, 1.7B)** | **24.80% ± 1.10%** | **53.10%** |
+| Baseline (4B) | 13.34% ± 1.05% | 36.87% |
+| StarPO (4B) | 24.36% ± 1.18% | 59.12% |
+| **CIA (ours, 4B)** | **33.72% ± 1.26%** | **63.97%** |
+| DeepSeek-V3.2 (670B) | 14.35% ± 0.87% | 47.34% |
+| Qwen3-235B-A22B-Instr. | 8.83% ± 0.87% | 27.71% |
+
+</div>
+
+### Efficient exploration
+
+<p align="center">
+  <img src="static/images/num_questions.png" alt="Number of questions during training" width="50%">
+  <br>
+  <img src="static/images/num_repeated_questions.png" alt="Repeated questions during training" width="50%">
+</p>
+<p align="center"><em>ΔBelief-RL reduces the number of turns required and suppresses redundant queries more rapidly than standard GRPO.</em></p>
+
+### Test-time interaction scaling
+
+<p align="center">
+  <img src="static/images/1.7b_interaction_scaling_1.png" alt="Test-time interaction scaling 1.7B" width="50%">
+  <br>
+  <img src="static/images/4b_interaction_scaling_1.png" alt="Test-time interaction scaling 4B" width="50%">
+</p>
+<p align="center"><em>CIA continues to improve as the interaction budget extends beyond the 20-turn training horizon. At 4B scale, the improvement from 20 to 50 turns is +26% for CIA vs +13% for StarPO.</em></p>
+
+### Out-of-distribution generalization
+
+<p align="center">
+  <img src="static/images/passk_benchmarks_k8_games.png" alt="OOD generalization" width="55%">
+</p>
+<p align="center"><em>Despite training only on 20 Questions, CIA generalizes to Guess My City and Murder Mystery.</em></p>
+
+<p align="center">
+  <img src="static/images/passk_cs_k8.png" alt="Customer Service" width="32%">
+  <img src="static/images/user_personalization.png" alt="User Personalization" width="30%">
+</p>
+<p align="center"><em>CIA outperforms StarPO on practical applications: Customer Service (+5–11%) and User Personalization (up to +15%).</em></p>
+
+## Installation
+
+### Prerequisites
+
+- Python >= 3.12
+- CUDA 12.8 compatible GPU(s) (minimum 2x GPUs recommended)
+- [uv](https://docs.astral.sh/uv/) package manager
+
+### Setup
+
+```bash
+# Clone with submodules (includes verl framework)
+git clone --recurse-submodules https://github.com/bethgelab/delta-belief-rl.git
+cd delta-belief-rl
+
+# Create virtual environment and install dependencies
+uv venv --python 3.12
+source .venv/bin/activate
+uv pip install -e .
+cd delta_belief_rl && uv sync && cd ..
 ```
 
-### 4. Multiple GPUs for questioner model:
-for runs on multiple gpus, for example 32B model, you also have to adjust that when the 'actor_rollout_ref.actor.ppo_mini_batch_size' is divided by the number of GPUs for the actor is equal to 'actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu'. 
-For an example see _scripts/beliefs_only/qwen3-32b-sft.sh_
+### Weights & Biases (optional)
 
-checklist tested runs:
-- [x] beliefs on gemini generations 
-
-### Other Settings (might be useful)
-
-To get a more detailed ouput for debugging set (default is false):
-```
-export VERL_LOGGING_LEVEL='DEBUG'
-multi_turn.debug=true
-```
-the training files are set to as:
-```
-data.train_files=delta_belief_rl/env/twenty_questions/direct/coca/rl_training.parquet
-data.val_files=delta_belief_rl/env/twenty_questions/direct/coca/test.parquet
-```
-to only run validation add:
-```
-+trainer.val_only=true 
+Training logs to W&B by default. Set your credentials:
+```bash
+export WANDB_PROJECT=delta-belief-rl
+export WANDB_ENTITY=<your-entity>
 ```
 
-default memory utalisation for actor vllm:
-```
-actor_rollout_ref.rollout.gpu_memory_utilization=0.5 
+## Running Experiments
+
+All training and evaluation scripts are located in `delta_belief_rl/scripts/`. Each script handles Ray initialization and GPU setup automatically via `scripts/slurm_setup.sh`.
+
+### Training
+
+**ΔBelief-RL** (our method):
+```bash
+# Qwen3-1.7B
+sbatch delta_belief_rl/scripts/train/delta-belief-rl/qwen1.7b.sh
+
+# Qwen3-4B
+sbatch delta_belief_rl/scripts/train/delta-belief-rl/qwen4b.sh
 ```
 
-before every train run we run validation first, if you want to disbale this set:
-```
-trainer.val_before_train=false \
+**GRPO baseline** (StarPO):
+```bash
+# Qwen3-1.7B
+sbatch delta_belief_rl/scripts/train/grpo/qwen1.7b.sh
+
+# Qwen3-4B
+sbatch delta_belief_rl/scripts/train/grpo/qwen4b.sh
 ```
 
-for debugging can reduce the total number of training steps:
-```
-trainer.total_training_steps=2
+### Evaluation
+
+Evaluate trained checkpoints (or HuggingFace-hosted models) on various benchmarks:
+
+```bash
+# 20 Questions (in-distribution)
+slurm delta_belief_rl/scripts/eval/twenty_questions.sh
+
+# Guess My City (OOD)
+slurm delta_belief_rl/scripts/eval/guess_my_city.sh
+
+# Murder Mystery (OOD)
+slurm delta_belief_rl/scripts/eval/murder_mystery.sh
+
+# Customer Service (OOD, uses API judge)
+slurm delta_belief_rl/scripts/eval/customer_service.sh
 ```
 
-default save and test frequency is 25 
-```
-trainer.save_freq=25 \
-trainer.test_freq=25 \
-```
+### GPU Configuration
 
-if using qwen3 as judge probably have to increase the allowed response lenght of the judge via:
-```
-judge_rollout.rollout.response_length=4000 \
+Adjust `CUDA_VISIBLE_DEVICES` at the top of each script to match your setup. The number of GPUs per model is configured via:
+```bash
+actor_rollout_ref.ngpus=1 # GPUs for the questioner model
+judge_rollout.ngpus=1     # GPUs for the judge model
 ```
 
-currently we are using `actor_rollout_ref.actor.optim.lr_warmup_steps_ratio=0.95` based on r1-search implementation, haven't tested different values, maybe worth checking
+### SLURM Clusters
 
+The setup script (`scripts/slurm_setup.sh`) handles Ray initialization, port allocation, and GPU memory checks automatically. For SLURM-managed clusters, the `SLURM_JOB_ID` is detected automatically; for other environments, set it manually in the script.
 
-### Updates since 13.06.25.
-- [x] Implemented regex reward, default set to false, to activate pass:
+## Project Structure
+
 ```
-multi_turn.reward.regex_reward=true
+delta-belief-rl/
+├── train.py                          # Main entry point
+├── delta_belief_rl/
+│   ├── config/                       # Hydra YAML configs
+│   ├── env/                          # Environment data & prompts
+│   │   ├── twenty_questions/         #   20 Questions (training env)
+│   │   ├── guess_my_city/            #   Guess My City (OOD eval)
+│   │   ├── murder_mystery/           #   Murder Mystery (OOD eval)
+│   │   └── customer_service/         #   Customer Service (OOD eval)
+│   ├── llm_agent/
+│   │   ├── generation.py             #   Multi-turn conversation logic
+│   │   ├── belief.py                 #   ΔBelief computation
+│   │   └── prompts.py                #   Prompt templates per environment
+│   ├── trainer/
+│   │   ├── multistep_trainer.py      #   Ray-based FSDP training loop
+│   │   └── ppo/core_algos.py         #   PPO, GRPO, Turn-GRPO, RLOO
+│   ├── workers/                      #   Ray actor & rollout workers
+│   ├── scripts/
+│   │   ├── train/                    #   Training scripts
+│   │   │   ├── delta-belief-rl/      #     ΔBelief-RL (ours)
+│   │   │   └── grpo/                 #     GRPO baseline
+│   │   └── eval/                     #   Evaluation scripts
+│   └── pyproject.toml                # Python dependencies
+├── verl/                             # veRL framework (git submodule)
+└── static/                           # Project page assets
 ```
-- [x] Adjusted judge prompt to include regex check in `learining_to_ask/llm_agent/prompts.py` and in `def _ask_question()` in `generation.py`. Default set to true, can disable via:
+
+## Citation
+
+```bibtex
+@article{cia2026,
+  title  = {Intrinsic Credit Assignment for Long Horizon Interaction},
+  author = {Auzina, Ilze Amanda and Str\"uber, Joschka and Hern\'andez-Guti\'errez, Sergio and Goel, Shashwat and Prabhu, Ameya and Bethge, Matthias},
+  year   = {2026}
+}
 ```
-multi_turn.answer_regex=false
-```
-- [x] Implemented RLOO for token-level dense rewards check in `learining_to_ask/trainer/ppo/core_algos.py`
 
-    - to use RLOO pass `algorithm.adv_estimator=rloo` see an example script file under `delta_belief_rl/scripts/dense_rewards/qwen3-1.7b-sft-rloo.sh`
+## Acknowledgments
 
-- [x] Added an example slurm script that runs one of the scripts specified as `run_qwen3-1.7B-sft.slurm`
-
-
+This codebase builds on [veRL](https://github.com/volcengine/verl) for distributed RL training with FSDP and Ray.

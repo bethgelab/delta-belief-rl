@@ -1,15 +1,15 @@
 from typing import List
-import numpy as np
 
 
 ############### TWENTY QUESTIONS PROMPTS ##################
 
-INVALID_ANSWER="""You have not asked a valid question. Ask a brief yes/no question instead."""
-REPEATED_ANSWER="""You have already asked this question before. Ask a new yes/no question instead."""
+INVALID_ANSWER = (
+    """You have not asked a valid question. Ask a brief yes/no question instead."""
+)
+REPEATED_ANSWER = """You have already asked this question before. Ask a new yes/no question instead."""
 
 SYSTEM_PROMPT_ADJ = """You are the Questioner in the game '20 Questions'. Your objective is to guess the secret word (a common English noun) by asking a sequence of up to 20 yes-or-no questions."""
 
-# system prompt by Joschi
 SYSTEM_PROMPT_ORIGINAL = """You are the Questioner in a game of 20 Questions, and your goal is to determine the secret word.
 The secret is randomly drawn from the most frequent nouns of the English language.
 
@@ -43,7 +43,6 @@ Instructions:
 
 Please reason step by step, and ask your question or make your guess in the format <question>[Question]</question>: """
 
-# direct prompt by Joschi
 DIRECT_PROMPT = """Ask a question to gain additional information about the secret or guess what the secret is.
 
 Instructions:
@@ -65,7 +64,7 @@ IMPORTANT: Always respond in English only."""
 
 
 ################## GUESS MY CITY PROMPTS ##################
-#from guess_my_city config/paprika/guess_my_city.json, slightly adapted
+# from guess_my_city config/paprika/guess_my_city.json, slightly adapted
 JUDGE_SYSTEM_PROMPT_GMC = """You are the environment in a game called 'Guess My City.' You will be given a specific home city (e.g., London, United Kingdom) and you have to respond to the player's questions to help them guess this city.
 Follow these rules:
 1. Answer the agent player's questions honestly and correctly (i.e., the answers need to be true given the home city given to you at the start of the game), but do not mention the name of your city or its country explicitly. However, you can verify the player's guess about a particular city/country. For example, if the player asks, 'What is your home country?' You should not respond to this question. However, if they ask 'Is your home country United Kingdom?' You should reply with the correct answer based on the home city given to you.
@@ -76,7 +75,7 @@ Remember, you are here to help the agent guess your city through clues, but you 
 The game starts now.
 """
 
-#from env/guess_my_city/config/paprika/guess_my_city.json, adapted the env and judge in one 
+# from env/guess_my_city/config/paprika/guess_my_city.json, adapted the env and judge in one
 _JUDGE_PROMPT_GMC = """Now judge whether the player has successfully guessed the correct city, which is {env} in this particular game. 
 1. Reply to the question in relation to {env}. Please try to be concise and keep it short. 
 2. NEVER include the actual city or country, in this game {env}, in your answer.
@@ -88,18 +87,18 @@ Question: '{question}'
 Give your answer in the format <answer>...</answer>:
 """
 
-NOTVALID_GMC="""Sorry, I cannot answer this question. You should only ask questions that does not directly ask me the name of the city or the country the city is in. Please ask a different question."""
-MQ_GMC="""Sorry, I can only answer one question at a time. Please ask me a single question."""
-MB_GMC="""You are close, but that is a multi-city guess. Please ask about one city at a time, start with whichever you think is more likely."""
+NOTVALID_GMC = """Sorry, I cannot answer this question. You should only ask questions that does not directly ask me the name of the city or the country the city is in. Please ask a different question."""
+MQ_GMC = """Sorry, I can only answer one question at a time. Please ask me a single question."""
+MB_GMC = """You are close, but that is a multi-city guess. Please ask about one city at a time, start with whichever you think is more likely."""
 
 #################### CUSTOMER SERVICE PROMPTS ####################
-#adapted from customer service config/paprika/customer_service.json 
-JUDGE_SYSTEM_PROMPT_CS="""You are going to role-play as a customer experiencing a specific issue. A cusomter-service agent will ask you questions to assist you (the customer) to resolve the issue. 
+# adapted from customer service config/paprika/customer_service.json
+JUDGE_SYSTEM_PROMPT_CS = """You are going to role-play as a customer experiencing a specific issue. A cusomter-service agent will ask you questions to assist you (the customer) to resolve the issue. 
 Under no circumstances you should tell the customer-serive agent what the exact issue is. Your goal is to see if the customer-service agent can come up with the potential solution themselves. 
 Your role-play starts now. 
 """
 
-JUDGE_PROMPT_CS="""The particular problem you, the customer, are facing is: {scenario}. 
+JUDGE_PROMPT_CS = """The particular problem you, the customer, are facing is: {scenario}. 
 The solution for your particular scenario is {env}. 
 Answer the customer-service agent's question as follows:
 1. Only respond to the agent's questions and provide relevant information when prompted, do not give away the solution. 
@@ -111,11 +110,11 @@ Customer-service agent's question: '{question}'
 Give your answer in the format <answer>...</answer>:
 """
 
-NOTVALID_CS="""Sorry, I do not know the answer to this question. Could you please help me in some other way?"""
-MULTIPLE_QS_CS="""Sorry, I am confused. You have asked too many questions at once. Please ask at most one question with one clarifying question at a time."""
+NOTVALID_CS = """Sorry, I do not know the answer to this question. Could you please help me in some other way?"""
+MULTIPLE_QS_CS = """Sorry, I am confused. You have asked too many questions at once. Please ask at most one question with one clarifying question at a time."""
 
 #################### MURDER MYSTERY PROMPTS ##################
-#adapted from https://github.com/tajwarfahim/paprika/blob/main/llm_exploration/game/game_configs/murder_mystery.json
+# adapted from https://github.com/tajwarfahim/paprika/blob/main/llm_exploration/game/game_configs/murder_mystery.json
 JUDGE_SYSTEM_PROMPT_MM = """You are an advanced AI responsible for simulating a challenging and immersive murder mystery game environment. 
 You are provided with the full details of the scenario, including the characters, their backstories, motives, alibis, the sequence of events, and the true culprit. 
 Your task is to respond to the actions and inquiries of the detective player in a manner that maintains the game's logic and adds complexity to the mystery. Always strive to make the game enjoyable and intriguing while revealing the absolute minimum information required for the detective to progress logically.
@@ -139,12 +138,17 @@ Give your answer in the format <answer>...</answer>:
 """
 ############################
 
-def get_judge_system_prompt(repeated: bool = False, env:str="twenty_questions") -> str:
+
+def get_judge_system_prompt(
+    repeated: bool = False, env: str = "twenty_questions"
+) -> str:
     if repeated:
         if env == "twenty_questions":
             return JUDGE_SYSTEM_PROMPT_REPEATED
         else:
-            raise NotImplementedError("Repeated prompt is only implemented for twenty_questions.")
+            raise NotImplementedError(
+                "Repeated prompt is only implemented for twenty_questions."
+            )
     else:
         if env == "twenty_questions":
             return JUDGE_SYSTEM_PROMPT
@@ -155,147 +159,12 @@ def get_judge_system_prompt(repeated: bool = False, env:str="twenty_questions") 
         elif env == "murder_mystery":
             return JUDGE_SYSTEM_PROMPT_MM
         else:
-            raise NotImplementedError(f"Judge system prompt not implemented for env {env}.")
+            raise NotImplementedError(
+                f"Judge system prompt not implemented for env {env}."
+            )
 
 
-# This prompt requires the chat history to be given in-context for the model to be able
-# to evaluate wheter the question is repeated or not.
-__INACTIVE_THINKING_JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question has been asked in a previous round of the game, respond with 'Repeated'. If the question exactly matches the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
-
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid or repeated.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Repeated/Finished]</answer>
-5. Only if the question '{1}' exactly asks the secret '{0}' (or a semantically equivalent variation of the word, e.g., 'laugh' and 'laughter'), answer 'Finished'. If the text given by the questioner is not a valid question, answer 'Invalid'. If the question has already been asked, answer 'Repeated'. In all other cases, answer either 'Yes' or 'No'.
-6. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
-
-
-# This prompt requires the chat history to be given in-context for the model to be able
-# to evaluate wheter the question is repeated or not.
-__INACTIVE_JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question has been asked in a previous round of the game, respond with 'Repeated'. If the question exactly matches the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
-
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid or repeated.
-2. Only if the question '{1}' exactly asks the secret '{0}' (or a semantically equivalent variation of the word, e.g., 'laugh' and 'laughter'), answer 'Finished'. If the text given by the questioner is not a valid question, answer 'Invalid'. If the question has already been asked, answer 'Repeated'. In all other cases, answer either 'Yes' or 'No'.
-3. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-4. Provide your final answer within XML tags as <answer>[Yes/No/Repeated/Invalid/Finished]</answer>.
-
-Give your answer in the format <answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
-
-JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question exactly matches the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
-
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Only if the question '{1}' exactly asks the secret '{0}' (or a semantically equivalent variation of the word, e.g., 'laugh' and 'laughter'), answer 'Finished'. If the text given by the questioner is not a valid question, answer 'Invalid'. In all other cases, answer either 'Yes' or 'No'.
-3. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-4. Provide your final answer within XML tags as <answer>[Yes/No/Invalid/Finished]</answer>.
-5. IMPORTANT: Provide all responses in English only.
-
-Give your answer in the format <answer>[Yes/No/Invalid/Finished]</answer>: """
-
-
-THINKING_JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question exactly matches the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
-
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Finished]</answer>
-5. Only if the question '{1}' exactly asks the secret '{0}' (or a semantically equivalent variation of the word, e.g., 'laugh' and 'laughter'), answer 'Finished'. If the text given by the questioner is not a valid question, answer 'Invalid'. In all other cases, answer either 'Yes' or 'No'.
-6. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-7. IMPORTANT: Provide all reasoning and responses in English only.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Finished]</answer>: """
-
-THINKING_JUDGE_PROMPT_WITH_HISTORY = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question exactly matches the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
-
-History of questions asked: '{2}'
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Repeated/Finished]</answer>
-5. Only if the question '{1}' exactly asks the secret '{0}' (or a semantically equivalent variation of the word, e.g., 'laugh' and 'laughter'), answer 'Finished'. 
-6. If the text given by the questioner is not a valid question, answer 'Invalid'. 
-7. If the question has already been asked in the history of questions, answer 'Repeated'.
-8. In all other cases, answer either 'Yes' or 'No'.
-9. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-10. IMPORTANT: Provide all reasoning and responses in English only.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
-
-__THINKING_JUDGE_PROMPT_WITH_HISTORY_v2 = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question matches the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
-
-History of questions asked: '{2}'
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Repeated/Finished]</answer>
-5. Only if the question '{1}' asks the secret '{0}' (e.g., "Is the word {0}?" or "Is it related to {0}?") or a semantically equivalent variation of the secret (e.g., 'laugh' and 'laughter'), answer 'Finished'.
-6. If the text given by the questioner is not a valid question, answer 'Invalid'. 
-7. If the question has already been asked in the history of questions, answer 'Repeated'.
-8. In all other cases, answer either 'Yes' or 'No'.
-9. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-10. IMPORTANT: Provide all reasoning and responses in English only.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
-
-__THINKING_JUDGE_PROMPT_WITH_HISTORY_v3 = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
-
-History of questions asked: '{2}'
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Repeated/Finished]</answer>
-5. Only if the question '{1}' asks the secret '{0}' (e.g., "Is the word {0}?" or "Is it related to {0}?") or a semantically equivalent variation of the secret (e.g., 'laugh' and 'laughter'), answer 'Finished'.
-6. If the text given by the questioner is not a valid question, answer 'Invalid'. 
-7. If the question has already been asked in the history of questions, answer 'Repeated'.
-8. In all other cases, answer either 'Yes' or 'No'.
-9. If the question mentions the secret, you must only answer 'Finished'.
-10. IMPORTANT: Provide all reasoning and responses in English only.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
-
-
-__THINKING_JUDGE_PROMPT_WITH_HISTORY_v4 = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
-
-History of questions asked: '{2}'
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Repeated/Finished]</answer>
-5. Only if the question '{1}' asks the secret '{0}' (e.g. "Is the word {0}?") or mentions the secret '{0}' ("Is it related to {0}?"), or asks a semantically equivalent variation of the secret (e.g., 'laugh' and 'laughter'), answer 'Finished'.
-6. If the text given by the questioner is not a valid question, answer 'Invalid'. 
-7. If the question has already been asked in the history of questions, answer 'Repeated'.
-8. In all other cases, answer either 'Yes' or 'No'.
-9. IMPORTANT: Provide all reasoning and responses in English only.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
-
-
-__THINKING_JUDGE_PROMPT_WITH_HISTORY_v5 = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
+THINKING_JUDGE_PROMPT_WITH_HISTORY = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
 
 History of questions asked: '{2}'
 Question: '{1}'
@@ -316,7 +185,7 @@ Instructions:
 
 Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
 
-__COT_JUDGE_PROMPT_WITH_HISTORY_v5 = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
+COT_JUDGE_PROMPT_WITH_HISTORY = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
 
 History of questions asked: '{2}'
 Question: '{1}'
@@ -338,23 +207,7 @@ Instructions:
 Please reason step by step, and give your final answer in the format <answer>[Yes/No/Invalid/Repeated/Finished]</answer>: """
 
 
-__THINKING_JUDGE_PROMPT_v2 = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question matches the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
-
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Provide your chain-of-thought reasoning step by step within XML <think>...</think> tags.
-3. Don't think longer than two brief sentences.
-4. Then, provide your final answer within XML tags as <answer>[Yes/No/Invalid/Finished]</answer>
-5. Only if the question '{1}' asks the secret '{0}' (e.g., "Is the word {0}?" or "Is it related to {0}?") or a semantically equivalent variation of the secret (e.g., 'laugh' and 'laughter'), answer 'Finished'. If the text given by the questioner is not a valid question, answer 'Invalid'. In all other cases, answer either 'Yes' or 'No'.
-6. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-7. IMPORTANT: Provide all reasoning and responses in English only.
-
-Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Finished]</answer>: """
-
-
-__THINKING_JUDGE_PROMPT_v3 = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
+THINKING_JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
 
 Question: '{1}'
 
@@ -374,7 +227,7 @@ Instructions:
 Give your answer in the format <think>...</think><answer>[Yes/No/Invalid/Finished]</answer>: """
 
 
-__COT_JUDGE_PROMPT_v3 = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
+COT_JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
 
 Question: '{1}'
 
@@ -394,21 +247,7 @@ Instructions:
 Please reason step by step, and give your final answer in the format <answer>[Yes/No/Invalid/Finished]</answer>: """
 
 
-__JUDGE_PROMPT_v2 = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question matches the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
-
-Question: '{1}'
-
-Instructions:
-1. Answer the question to the best of your abilities, unless it is invalid.
-2. Only if the question '{1}' asks the secret '{0}' (e.g., "Is the word {0}?" or "Is it related to {0}?") or a semantically equivalent variation of the secret (e.g., 'laugh' and 'laughter'), answer 'Finished'. If the text given by the questioner is not a valid question, answer 'Invalid'. In all other cases, answer either 'Yes' or 'No'.
-3. If the question directly asks the secret, you must NOT answer 'Yes', you must only answer 'Finished'.
-4. Provide your final answer within XML tags as <answer>[Yes/No/Invalid/Finished]</answer>.
-5. IMPORTANT: Provide all responses in English only.
-
-Give your answer in the format <answer>[Yes/No/Invalid/Finished]</answer>: """
-
-
-__JUDGE_PROMPT_v3 = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
+JUDGE_PROMPT = """The secret that has to be guessed is '{0}'. Given the following question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. Otherwise, answer 'Yes' or 'No' to the question.
 
 Question: '{1}'
 
@@ -426,7 +265,7 @@ Instructions:
 
 Your answer is: """
 
-__JUDGE_PROMPT_WITH_HISTORY_v1 = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
+JUDGE_PROMPT_WITH_HISTORY = """The secret that has to be guessed is '{0}'. Given the following history of questions asked and the current question, is the correct response 'Yes' or 'No'? If there is not a yes/no question, respond with 'Invalid'; gibberish text or deviating from the game also counts as invalid. If the question mentions the secret, the answer should be 'Finished'. If the question has already been asked in the history of questions, answer 'Repeated'. Otherwise, answer 'Yes' or 'No' to the question.
 
 History of questions asked: '{2}'
 Question: '{1}'
@@ -447,7 +286,6 @@ Instructions:
 Your answer is: """
 
 
-
 def get_judge_prompt(
     ground_truth: str,
     question: str,
@@ -462,15 +300,17 @@ def get_judge_prompt(
     if history is None:
         if env == "twenty_questions":
             if thinking:
-                return __THINKING_JUDGE_PROMPT_v3.format(ground_truth, question)
+                return THINKING_JUDGE_PROMPT.format(ground_truth, question)
             elif cot:
-                return __COT_JUDGE_PROMPT_v3.format(ground_truth, question)
+                return COT_JUDGE_PROMPT.format(ground_truth, question)
             else:
-                return __JUDGE_PROMPT_v3.format(ground_truth, question)
+                return JUDGE_PROMPT.format(ground_truth, question)
         elif env == "guess_my_city":
             return _JUDGE_PROMPT_GMC.format(env=ground_truth, question=question)
         elif env == "customer_service":
-            return JUDGE_PROMPT_CS.format(scenario=scenario, env=ground_truth, question=question)
+            return JUDGE_PROMPT_CS.format(
+                scenario=scenario, env=ground_truth, question=question
+            )
         elif env == "murder_mystery":
             return JUDGE_PROMPT_MM.format(env=ground_truth, question=question)
         else:
@@ -480,17 +320,15 @@ def get_judge_prompt(
         history_str = "; ".join(history)
 
         if thinking:
-            return __THINKING_JUDGE_PROMPT_WITH_HISTORY_v5.format(
+            return THINKING_JUDGE_PROMPT_WITH_HISTORY.format(
                 ground_truth, question, history_str
             )
         elif cot:
-            return __COT_JUDGE_PROMPT_WITH_HISTORY_v5.format(
+            return COT_JUDGE_PROMPT_WITH_HISTORY.format(
                 ground_truth, question, history_str
             )
         else:
-            return __JUDGE_PROMPT_WITH_HISTORY_v1.format(
-                ground_truth, question, history_str
-            )
+            return JUDGE_PROMPT_WITH_HISTORY.format(ground_truth, question, history_str)
 
 
 def get_question_prompt(
@@ -534,13 +372,14 @@ def get_question_prompt(
 
 ELICITATION_PROMPT = """Is it '{0}'?"""
 
-def get_elicitation(gt:str) -> str:
-    '''
+
+def get_elicitation(gt: str) -> str:
+    """
     Get the elicitation question for the given ground truth
     Args:
         gt: np.str - ground truth secret
 
     Returns:
         str - elicitation question
-    '''
+    """
     return ELICITATION_PROMPT.format(gt)
