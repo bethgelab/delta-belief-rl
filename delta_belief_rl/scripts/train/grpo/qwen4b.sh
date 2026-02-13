@@ -18,7 +18,7 @@ export VERL_LOGGING_LEVEL='WARN'
 source scripts/slurm_setup.sh
 
 SEED="${1:-42}"
-: "${BASE_MODEL:=Klingspor/lta_singleturn_hard_sft_qwen3-4b}" && export BASE_MODEL
+: "${BASE_MODEL:=Klingspor/Qwen3-4B-SFT}" && export BASE_MODEL
 : "${ORACLE_MODEL:=Qwen/Qwen3-14B}" && export ORACLE_MODEL
 : "${EXPERIMENT_NAME:=train_grpo_qwen4b}" && export EXPERIMENT_NAME
 
