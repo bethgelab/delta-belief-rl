@@ -19,7 +19,7 @@ source scripts/slurm_setup.sh
 
 # Set default values if not already defined
 SEED="${1:-42}"
-: "${BASE_MODEL:=iaa01/qwen3-4b-elicit-pos-ckpt56}" && export BASE_MODEL
+: "${BASE_MODEL:=iaa01/CIA-4B}" && export BASE_MODEL
 : "${ORACLE_MODEL:=Qwen/Qwen3-14B}" && export ORACLE_MODEL
 : "${EXPERIMENT_NAME:=test_hf_pushed_elicit_pos_w01}" && export EXPERIMENT_NAME
 
