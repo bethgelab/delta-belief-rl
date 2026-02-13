@@ -160,14 +160,15 @@ section + section {
   transition: background 0.2s, box-shadow 0.2s;
 }
 
-.btn-paper {
-  background: #2c3e50;
-  color: #fff;
+.btn-hf {
+  background: #ffe066;
+  color: #1a1a1a;
+  border: 1.5px solid #1a1a1a;
 }
 
-.btn-paper:hover {
-  background: #1a252f;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+.btn-hf:hover {
+  background: #ffd633;
+  box-shadow: 0 2px 8px rgba(255, 214, 51, 0.35);
 }
 
 .btn-code {
@@ -184,6 +185,7 @@ section + section {
 .btn-arxiv {
   background: #b31b1b;
   color: #fff;
+  border: 1.5px solid #1a1a1a;
 }
 
 .btn-arxiv:hover {
