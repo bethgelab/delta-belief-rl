@@ -216,10 +216,14 @@ delta-belief-rl/
 ## Citation
 
 ```bibtex
-@article{cia2026,
-  title  = {Intrinsic Credit Assignment for Long Horizon Interaction},
-  author = {Auzina, Ilze Amanda and Str\"uber, Joschka and Hern\'andez-Guti\'errez, Sergio and Goel, Shashwat and Prabhu, Ameya and Bethge, Matthias},
-  year   = {2026}
+@misc{auzina2026intrinsiccreditassignmentlong,
+      title={Intrinsic Credit Assignment for Long Horizon Interaction}, 
+      author={Ilze Amanda Auzina and Joschka Strüber and Sergio Hernández-Gutiérrez and Shashwat Goel and Ameya Prabhu and Matthias Bethge},
+      year={2026},
+      eprint={2602.12342},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2602.12342}, 
 }
 ```
 
