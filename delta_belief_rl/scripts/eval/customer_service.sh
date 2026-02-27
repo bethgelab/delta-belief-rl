@@ -15,7 +15,7 @@ mkdir -p .local_logs
 
 #initialise ray 
 export VERL_LOGGING_LEVEL='WARN'
-source scripts/slurm_setup.sh
+source delta_belief_rl/scripts/slurm_setup.sh
 #IMPORTANT
 #remember to set your OpenRouter API key in: delta_belief_rl/workers/rollout/api_key.py
 

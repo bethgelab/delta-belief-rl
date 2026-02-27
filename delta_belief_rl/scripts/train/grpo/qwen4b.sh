@@ -15,7 +15,7 @@ mkdir -p .local_logs
 
 #initialise ray 
 export VERL_LOGGING_LEVEL='WARN'
-source scripts/slurm_setup.sh
+source delta_belief_rl/scripts/slurm_setup.sh
 
 SEED="${1:-42}"
 : "${BASE_MODEL:=Klingspor/Qwen3-4B-SFT}" && export BASE_MODEL

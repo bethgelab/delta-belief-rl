@@ -15,7 +15,7 @@ mkdir -p .local_logs
 
 #initialise ray 
 export VERL_LOGGING_LEVEL='WARN'
-source scripts/slurm_setup.sh
+source delta_belief_rl/scripts/slurm_setup.sh
 
 # Set default values if not already defined
 SEED="${1:-42}"
