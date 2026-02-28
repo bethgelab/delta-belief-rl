@@ -80,7 +80,7 @@ echo "Projected socket path length: $(echo -n "$RAY_REAL/session_x/sockets/plasm
 # -------------------------------------------------------------------
 
 #activate virtual environment
-source .venv/bin/activate
+source delta_belief_rl/.venv/bin/activate
 
 # ------------- Third Specify env params -------------
 # Avoid unbound variable error if LD_LIBRARY_PATH is unset
@@ -92,7 +92,6 @@ SEED="${1:-42}"
 
 # set the W&B env vars before starting ray
 : "${WANDB_PROJECT:=delta-belief-rl}" && export WANDB_PROJECT
-: "${WANDB_ENTITY:=delta-belief-rl}" && export WANDB_ENTITY
 
 # Start Ray head (single node) — NOTE: pass --temp-dir
 # count only the GPUs Slurm made visible to you
